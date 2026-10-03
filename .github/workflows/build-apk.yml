@@ -49,7 +49,7 @@ jobs:
               -o /tmp/sensevoice.tar.bz2 \
               "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
             echo "流式提取 model.int8.onnx ..."
-            tar -xOf /tmp/sensevoice.tar.bz2 '*/model.int8.onnx' > "$MODEL_DIR/model.int8.onnx"
+            tar -xOf --wildcards /tmp/sensevoice.tar.bz2 '*/model.int8.onnx' > "$MODEL_DIR/model.int8.onnx"
             rm -f /tmp/sensevoice.tar.bz2
             ls -la "$MODEL_DIR"
           else
