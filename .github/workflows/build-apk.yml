@@ -37,19 +37,38 @@ jobs:
           echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
 
-      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并流式提取到 assets/models。
-      # prepareOfflineModels task 检测到 model.int8.onnx 存在且体积合理即通过。
+      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并提取到 assets/models。
+      # 用 Python tarfile 跨平台精确提取 model.int8.onnx（避开 GNU/BSD tar --wildcards 差异）。
       - name: Download offline speech model (SenseVoice-Small int8)
         run: |
           MODEL_DIR="android/app/src/main/assets/models"
           mkdir -p "$MODEL_DIR"
           if [ ! -f "$MODEL_DIR/model.int8.onnx" ]; then
             echo "下载 SenseVoice-Small int8 模型 (163MB tar.bz2)..."
-            curl -L --retry 3 \
-              -o /tmp/sensevoice.tar.bz2 \
+            curl -L --retry 3 -o /tmp/sensevoice.tar.bz2 \
               "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
-            echo "流式提取 model.int8.onnx ..."
-            tar -xOf --wildcards /tmp/sensevoice.tar.bz2 '*/model.int8.onnx' > "$MODEL_DIR/model.int8.onnx"
+            echo "用 Python 提取 model.int8.onnx ..."
+            python3 - "$PWD/$MODEL_DIR" <<'PYEOF'
+import sys, tarfile, os
+out_dir = sys.argv[1]
+arch = tarfile.open('/tmp/sensevoice.tar.bz2', 'r:bz2')
+found = False
+target = 'model.int8.onnx'
+for m in arch.getmembers():
+    if m.name.endswith('/' + target):
+        src = arch.extractfile(m)
+        dst = os.path.join(out_dir, target)
+        with open(dst, 'wb') as f:
+            f.write(src.read())
+        src.close()
+        found = True
+        print('提取完成:', dst, os.path.getsize(dst), 'bytes')
+        break
+arch.close()
+if not found:
+    print('!!! 在 tar 包中未找到 model.int8.onnx')
+    sys.exit(1)
+PYEOF
             rm -f /tmp/sensevoice.tar.bz2
             ls -la "$MODEL_DIR"
           else
