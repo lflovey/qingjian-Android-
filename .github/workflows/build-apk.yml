@@ -21,29 +21,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # GitHub ubuntu-latest runner 预装完整 Android SDK（/usr/local/lib/android/sdk）。
-      # 不手动装组件（sdkmanager 上的 cmake;3.28.3 包不存在，会失败）；
-      # 直接复用预装 NDK / build-tools / cmake，只确认 NDK 27 存在并按需补装。
+      # GitHub ubuntu-latest runner 预装完整 Android SDK。复用预装 NDK/build-tools/cmake，
+      # 只确保 NDK 27.2.12479018 存在（build.gradle 指定）。
       - name: Set up Android SDK (runner preinstalled)
         run: |
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export ANDROID_SDK_ROOT="$ANDROID_HOME"
           echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "--- 已预装 NDK:"; ls "$ANDROID_HOME/ndk" 2>/dev/null
-          echo "--- 已预装 build-tools:"; ls "$ANDROID_HOME/build-tools" 2>/dev/null
-          echo "--- 已预装 cmake:"; ls "$ANDROID_HOME/cmake" 2>/dev/null
           SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ -d "$ANDROID_HOME/ndk/27.2.12479018" ]; then
-            echo "NDK 27.2.12479018 已预装 ✓"
-          else
+          if [ ! -d "$ANDROID_HOME/ndk/27.2.12479018" ]; then
             echo "补装 NDK 27.2.12479018 ..."
-            yes | "$SDKMGR" "ndk;27.2.12479018" 2>&1 | tail -3
+            yes | "$SDKMGR" "ndk;27.2.12479018"
           fi
           echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
 
-      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并解压到 assets/models
+      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并流式提取到 assets/models。
       # prepareOfflineModels task 检测到 model.int8.onnx 存在且体积合理即通过。
       - name: Download offline speech model (SenseVoice-Small int8)
         run: |
@@ -54,9 +48,8 @@ jobs:
             curl -L --retry 3 \
               -o /tmp/sensevoice.tar.bz2 \
               "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
-            echo "解压 model.int8.onnx ..."
-            tar xjf /tmp/sensevoice.tar.bz2 -C /tmp --wildcards '*/model.int8.onnx'
-            find /tmp -maxdepth 3 -name 'model.int8.onnx' -exec cp {} "$MODEL_DIR/model.int8.onnx" \;
+            echo "流式提取 model.int8.onnx ..."
+            tar -xOf /tmp/sensevoice.tar.bz2 '*/model.int8.onnx' > "$MODEL_DIR/model.int8.onnx"
             rm -f /tmp/sensevoice.tar.bz2
             ls -la "$MODEL_DIR"
           else
