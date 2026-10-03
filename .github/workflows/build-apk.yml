@@ -28,12 +28,14 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKMGR" --licenses > /dev/null 2>&1 || true
-          # run#7 实测失败点：configureCMakeDebug[arm64-v8a] 报 [CXX1300] CMake '3.28.3' was not found。
-          # app/build.gradle externalNativeBuild 依赖 CMake 3.28.3，之前只装了 NDK 漏装了 CMake。
-          if [ ! -d "$ANDROID_HOME/cmake/3.28.3" ]; then
-            echo 'install cmake 3.28.3 ...'
-            yes | "$SDKMGR" 'cmake;3.28.3'
+          # CMake：不锁版本，用 runner 系统自带 cmake（ubuntu-24.04 预装 3.28.x）。
+          # 曾尝试 sdkmanager 装 'cmake;3.28.3' 但 SDK 仓库无此组件（Failed to find package），
+          # 且 build.gradle 已移除 externalNativeBuild.cmake.version。做可用性兜底检查：
+          if ! command -v cmake > /dev/null 2>&1; then
+            echo "::error::系统未找到 cmake，runner 预装异常"
+            exit 1
           fi
+          echo "system cmake: $(cmake --version | head -n1)"
           if [ ! -d "$ANDROID_HOME/ndk/27.2.12479018" ]; then
             echo 'install NDK 27.2.12479018 ...'
             yes | "$SDKMGR" 'ndk;27.2.12479018'
