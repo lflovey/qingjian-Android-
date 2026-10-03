@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 启动图标：竹简绿底 + 三条简牍纹（矢量，免 PNG） -->
+<!--
+  应用图标：中性"语音输入"风格，避免使用上游青简的竹简 logo / 品牌图形。
+  上游桌面版的「青简」项目名称与 Logo 不包含在 GPL 代码授权内，故派生安卓版不使用其品牌图形，
+  改用通用的键盘/语音输入法图标（圆形深绿底 + 白色麦克风 + 下划线，示意"输入/语音"）。
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp"
     android:height="48dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
+    <!-- 圆形深绿底 -->
     <path
         android:fillColor="#2E7D32"
-        android:pathData="M8,4 L40,4 Q44,4 44,8 L44,40 Q44,44 40,44 L8,44 Q4,44 4,40 L4,8 Q4,4 8,4 Z" />
+        android:pathData="M24,4 A20,20 0 1,1 24,44 A20,20 0 1,1 24,4 Z" />
+    <!-- 白色键盘横条（上） -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M12,13 L36,13 L36,17 L12,17 Z M12,22.5 L36,22.5 L36,26.5 L12,26.5 Z M12,32 L28,32 L28,36 L12,36 Z" />
+        android:pathData="M12,17 L36,17 L36,21 L12,21 Z" />
+    <!-- 白色键盘按键点（三列） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,24 A2,2 0 1,1 15,28 A2,2 0 1,1 15,24 Z M24,24 A2,2 0 1,1 24,28 A2,2 0 1,1 24,24 Z M33,24 A2,2 0 1,1 33,28 A2,2 0 1,1 33,24 Z M15,31 A2,2 0 1,1 15,35 A2,2 0 1,1 15,31 Z M29,31 A2,2 0 1,1 29,35 A2,2 0 1,1 29,31 Z" />
 </vector>

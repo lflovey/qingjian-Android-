@@ -31,6 +31,8 @@
 >
 > - **安卓版构建与文档**：见 [`android/`](android/)（含独立 README、语音模型获取、`./gradlew assembleDebug` 构建）
 > - 桌面版继续跟随上游 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian)
+>
+> **商标说明**：上游项目「青简」的名称与 Logo 不包含在 GPL 代码授权内，版权归原作者 qingjian-team 所有。本安卓版已采用独立的应用图标与命名（青简输入法·安卓版），并通过 ABOUT 声明派生来源。
 
 ---
 

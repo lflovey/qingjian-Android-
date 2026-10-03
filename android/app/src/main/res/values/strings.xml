@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">青简输入法</string>
+    <string name="app_name">青简输入法（安卓版）</string>
     <string name="subtype_pinyin_zh">拼音（中文）</string>
     <string name="subtype_en_us">English (US)</string>
 
-    <string name="settings_title">青简输入法</string>
+    <string name="settings_title">青简输入法（安卓版）</string>
     <string name="settings_intro">轻快、本地化的拼音输入法。引擎与词库全部在设备本地运行，不上传任何输入内容。</string>
+    <string name="settings_about">本应用基于开源的青简 Qingjian 项目（GPL-3.0-or-later）派生。桌面版及「青简」项目名称、Logo 版权归原作者 qingjian-team 所有；安卓版为本仓库独立实现。</string>
     <string name="settings_version">版本：%1$s（debug）</string>
     <string name="settings_engine_ready">引擎数据已就绪：%1$s</string>
     <string name="settings_engine_pending">引擎数据尚未解压：打开一次键盘后自动完成初始化</string>
