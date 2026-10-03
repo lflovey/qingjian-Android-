@@ -1,0 +1,78 @@
+name: Build Android APK
+
+# 触发：推 main / 打 version tag / 手动触发
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 允许上传 Release 资产（打 tag 时）
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK (含 NDK 27.2.12479018 与 build-tools 35.0.0)
+        uses: android-actions/setup-android@v3
+
+      # 工程 build.gradle 要求：NDK 27.2.12479018、buildTools 35.0.0、CMake 3.28.3
+      - name: Install specific NDK & build-tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "ndk;27.2.12479018" "build-tools;35.0.0" "cmake;3.28.3" >/dev/null 2>&1
+          echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> $GITHUB_ENV
+
+      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并解压到 assets/models
+      # prepareOfflineModels task 检测到 model.int8.onnx 存在且体积合理即通过。
+      - name: Download offline speech model (SenseVoice-Small int8)
+        run: |
+          MODEL_DIR="android/app/src/main/assets/models"
+          mkdir -p "$MODEL_DIR"
+          if [ ! -f "$MODEL_DIR/model.int8.onnx" ]; then
+            echo "下载 SenseVoice-Small int8 模型 (163MB tar.bz2)..."
+            curl -L --retry 3 \
+              -o /tmp/sensevoice.tar.bz2 \
+              "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
+            echo "下载完成，解压 model.int8.onnx ..."
+            tar xjf /tmp/sensevoice.tar.bz2 -C /tmp --wildcards '*/model.int8.onnx'
+            find /tmp -name 'model.int8.onnx' -exec cp {} "$MODEL_DIR/model.int8.onnx" \;
+            rm -f /tmp/sensevoice.tar.bz2
+            ls -la "$MODEL_DIR"
+          else
+            echo "模型已存在，跳过下载"
+          fi
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
+        env:
+          # prepareOfflineModels 已由上面下载步骤满足；如有网络波动可保留注释。
+          # 若 gradle 仍需拉 AndroidX/AGP，腾讯镜像已配置在 settings.gradle。
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m
+
+      - name: Upload APK (artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: qingjian-ime-debug
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+
+      # 打 v* tag 时，自动把 APK 挂到对应 GitHub Release
+      - name: Upload APK to Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/debug/*.apk
+          generate_release_notes: true
