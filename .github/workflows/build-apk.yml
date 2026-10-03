@@ -1,6 +1,5 @@
 name: Build Android APK
 
-# 触发：推 main / 打 version tag / 手动触发
 on:
   push:
     branches: [ main ]
@@ -11,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 允许上传 Release 资产（打 tag 时）
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -21,8 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # GitHub ubuntu-latest runner 预装完整 Android SDK。复用预装 NDK/build-tools/cmake，
-      # 只确保 NDK 27.2.12479018 存在（build.gradle 指定）。
       - name: Set up Android SDK (runner preinstalled)
         run: |
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
@@ -31,65 +28,36 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           if [ ! -d "$ANDROID_HOME/ndk/27.2.12479018" ]; then
-            echo "补装 NDK 27.2.12479018 ..."
-            yes | "$SDKMGR" "ndk;27.2.12479018"
+            echo 'install NDK 27.2.12479018 ...'
+            yes | "$SDKMGR" 'ndk;27.2.12479018'
           fi
           echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
 
-      # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并提取到 assets/models。
-      # 用 Python tarfile 跨平台精确提取 model.int8.onnx（避开 GNU/BSD tar --wildcards 差异）。
-      - name: Download offline speech model (SenseVoice-Small int8)
+      - name: Download offline speech model
         run: |
           MODEL_DIR="android/app/src/main/assets/models"
           mkdir -p "$MODEL_DIR"
           if [ ! -f "$MODEL_DIR/model.int8.onnx" ]; then
-            echo "下载 SenseVoice-Small int8 模型 (163MB tar.bz2)..."
             curl -L --retry 3 -o /tmp/sensevoice.tar.bz2 \
-              "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
-            echo "用 Python 提取 model.int8.onnx ..."
-            python3 - "$PWD/$MODEL_DIR" <<'PYEOF'
-import sys, tarfile, os
-out_dir = sys.argv[1]
-arch = tarfile.open('/tmp/sensevoice.tar.bz2', 'r:bz2')
-found = False
-target = 'model.int8.onnx'
-for m in arch.getmembers():
-    if m.name.endswith('/' + target):
-        src = arch.extractfile(m)
-        dst = os.path.join(out_dir, target)
-        with open(dst, 'wb') as f:
-            f.write(src.read())
-        src.close()
-        found = True
-        print('提取完成:', dst, os.path.getsize(dst), 'bytes')
-        break
-arch.close()
-if not found:
-    print('!!! 在 tar 包中未找到 model.int8.onnx')
-    sys.exit(1)
-PYEOF
+              https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2
+            python3 .github/scripts/extract_model.py /tmp/sensevoice.tar.bz2 "$MODEL_DIR"
             rm -f /tmp/sensevoice.tar.bz2
             ls -la "$MODEL_DIR"
           else
-            echo "模型已存在，跳过下载"
+            echo 'model already exists, skip'
           fi
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x android/gradlew
 
       - name: Build Debug APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK (artifacts)
         uses: actions/upload-artifact@v4
         with:
           name: qingjian-ime-debug
-          path: |
-            android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/*.apk
 
-      # 打 v* tag 时，自动把 APK 挂到对应 GitHub Release
       - name: Upload APK to Release (on tag)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
