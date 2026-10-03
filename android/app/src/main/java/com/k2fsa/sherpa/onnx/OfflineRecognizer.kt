@@ -23,21 +23,37 @@ package com.k2fsa.sherpa.onnx
 
 import android.content.res.AssetManager
 
+data class QnnConfig(
+    var backendLib: String = "",
+    var contextBinary: String = "",
+    var systemLib: String = "",
+)
+
 /**
  * SenseVoice 离线识别模型配置。
  *
- * 字段完整性：`model` / `language` / `useInverseTextNormalization` 三条全部命中
- * .so 的无条件字段清单（官方 v1.12.21 另含 `qnnConfig`，静态字段默认值、非 JNI 读取，
- * 本工程未启用 Qualcomm QNN，故省略；省略不影响 JNI 契约）。
+ * 字段完整性：`model` / `language` / `useInverseTextNormalization` / `qnnConfig` 四条全部命中
+ * .so 的无条件字段清单。
+ *
+ * ⚠️ v1.13 修复（真机崩溃：模型加载到 100% 后进程自动退出）：
+ *   native `libsherpa-onnx-jni.so` 在解析 `OfflineSenseVoiceModelConfig` 时会**无条件**
+ *   读取 `qnnConfig` 字段并按其类描述符 `Lcom/k2fsa/sherpa/onnx/QnnConfig;` 查找类
+ *   （.so 实测存在该字符串与 `backendLib/contextBinary/systemLib` 字段名）。
+ *   此前本工程缺失该字段与 [QnnConfig] 类 → native 侧 GetFieldID 失败 →
+ *   构造 `OfflineRecognizer` 时进程直接崩溃（logcat 表现为模型 LOADING 到 100% 后
+ *   VoiceRecognizer 所在进程被杀死、重启）。
  *
  * @property model          模型文件名或绝对路径（本工程传入 filesDir 下的绝对路径）
  * @property language       语言："auto"/"zh"/"en"/"ja"/"ko"/"yue"（默认 "auto" 自动判别）
  * @property useInverseTextNormalization 是否启用逆文本正则化（数字/标点归一化）
+ * @property qnnConfig      Qualcomm QNN 配置（本工程不使用 CPU 推理，保持默认空值；
+ *                          仅为满足 native JNI 字段契约而声明）
  */
 data class OfflineSenseVoiceModelConfig(
     var model: String = "",
     var language: String = "auto",
     var useInverseTextNormalization: Boolean = true,
+    var qnnConfig: QnnConfig = QnnConfig(),
 )
 
 /**
