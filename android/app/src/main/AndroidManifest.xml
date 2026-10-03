@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      ★ 录音权限：v1.9 起语音输入为**纯离线**方案（sherpa-onnx + SenseVoice-Small），
+        录音由本应用自身的 AudioRecord 完成（见 VoiceRecognizer）。
+      ⚠️ 本权限为**运行时权限**，需在激活语音时动态检查（见 QingjianImeService.checkAudioPermission）。
+      ★ INTERNET 未声明：离线识别全流程在本机完成，不触网。
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!--
+      ★ 包可见性声明（<queries>）——v1.9.1 现状说明
+      ⚠️ 历史：v1.7 为解决 Android 11+ 包可见性过滤导致的
+         `SpeechRecognizer.isRecognitionAvailable()` 误报 false（红米 K70 Pro / 澎湃 OS 3）
+         而添加，用于让 `queryIntentServices(RecognitionService.SERVICE_INTERFACE)` 能看到系统语音引擎。
+      ⚠️ 现状：v1.9 起语音输入**只**走纯离线引擎（见 VoiceRecognizer），
+         **不再调用** `android.speech.SpeechRecognizer`，故本 <queries> 当前**无实际功能用途**。
+      ★ 处置：**保留**并加本注释。理由——未来若需恢复在线识别（或做在线/离线择优），
+         必须重新声明本 <queries>（否则 isRecognitionAvailable 会再次误报），
+         保留可避免届时遗漏；且保留对运行时无副作用、不增加任何权限。
+    -->
+    <queries>
+        <!-- 标准语音识别服务接口（当前无用途，为未来可能恢复在线识别预留） -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <!-- 常见语音识别服务包（当前无用途，为未来可能恢复在线识别预留） -->
+        <package android:name="com.google.android.googlequicksearchbox" />
+        <package android:name="com.google.android.tts" />
+        <package android:name="com.miui.voiceassist" />
+        <package android:name="com.xiaomi.aiasst.service" />
+        <package android:name="com.iflytek.speechcloud" />
+    </queries>
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:allowBackup="false"
+        android:theme="@style/Theme.Qingjian">
+
+        <!-- 输入法服务：BIND_INPUT_METHOD 权限声明 + android.view.InputMethod 过滤器 + method.xml 元数据 -->
+        <service
+            android:name=".QingjianImeService"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:theme="@style/Theme.Qingjian">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

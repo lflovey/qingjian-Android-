@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  键盘根视图（onCreateInputView 的返回值）。
+
+  v0.2：候选栏从「系统 candidates view 通道」并入输入法主视图。
+  v0.4：候选区改为「双态容器」（同栏位互斥，参照百度输入法）。
+  v0.5：新增输入方式「卡片网格」覆盖层（作为垂直流中的第三项）。
+  ★ v0.6（本版核心）：根布局由 LinearLayout 改为 **FrameLayout**，输入方式面板改为根的直接子 View、
+      MATCH_PARENT、以 visibility 控制整键盘区覆盖。
+  ★ v1.0（本版核心）：新增语音输入状态栏 voiceInputHost —— 与 candidatesContainer **平级**、
+      wrap_content、初始 GONE，激活时替换工具栏那一条，键盘字母区保持可见可点。
+
+  ── 结构（FrameLayout 根，三个直接子项）────────────────────────────────────────
+    keyboardRoot (FrameLayout, match_parent × wrap_content)
+      ├─ ① contentColumn (LinearLayout, 垂直) —— 原键盘内容，整体保留：
+      │     ├─ cursorModeHost (FrameLayout, wrap_content, gone)  ← ★ v0.8 光标面板宿主（与候选栏平级）
+      │     ├─ voiceInputHost (FrameLayout, wrap_content, gone)  ← ★ v1.0 语音状态栏宿主（与候选栏平级）
+      │     ├─ candidatesContainer (FrameLayout, 48dp)   ← 双态容器
+      │     │     ├─ inputToolbar   （状态 A：工具栏，无拼音缓冲时显示）
+      │     │     └─ candidatesView （状态 B：候选栏，拼音缓冲非空时显示）
+      │     └─ panelHost (FrameLayout)                   ← 三套键盘叠放
+      │           ├─ panelQwerty
+      │           ├─ panelT9
+      │           └─ panelSymbols
+      └─ ② InputModePanelView (match_parent × match_parent, 初始 gone)
+            ★ 整键盘区覆盖层：展开时覆盖 ①，即候选栏 + 工具栏 + 键盘全部被遮挡。
+      └─ ③ ClipboardPanelView (match_parent × match_parent, 初始 gone)
+            ★ v0.7 剪贴板面板，与 ② 同级互斥。
+
+  ── ★ v0.8 / v1.0 与既有覆盖层的区别（关键）────────────────────────────────────
+    ② / ③ 是「整键盘区覆盖」（MATCH_PARENT，盖住全部）；
+    而 cursorModeHost / voiceInputHost 是「**只替换工具栏那一条**」（wrap_content，插在候选栏位置）：
+    激活时它 VISIBLE、candidatesContainer GONE，键盘字母区 panelHost 完全不受影响，
+    用户仍可正常点字母键（→ 触发「输入字符自动退出」/ 光标模式）。
+    ⚠️ cursorModeHost 与 voiceInputHost 互斥（同时只显示一个），由 QingjianImeService 保证。
+
+  ── 为什么用 FrameLayout 根 ────────────────────────────────────────────────────
+    FrameLayout 的两个子项天然层叠，第二个子项（输入方式面板）以 MATCH_PARENT
+    铺满整个键盘区（候选栏 + 键盘总高），因此「点切换键 → 整键盘区被替换为面板」
+    在几何上严格成立（面板完全覆盖 contentColumn 的所有可见像素）。
+
+  ── 回归红线（不得破坏）────────────────────────────────────────────────────────
+    id 引用全部保留可用：candidatesContainer / inputToolbar / candidatesView /
+    panelHost / panelQwerty / panelT9 / panelSymbols。
+    双态互斥（showToolbar / showCandidates）与删除键逻辑（resetComposing）不受影响。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyboardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/keyboard_bg">
+
+    <!-- ① 原键盘内容列（候选双态容器 + 键盘面板），结构、id 与 v0.5 完全一致 -->
+    <LinearLayout
+        android:id="@+id/contentColumn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--
+          ★ v0.8 光标操作面板 / 光标平移条（**与 candidatesContainer 平级**）。
+
+          为什么平级而不是塞进 candidatesContainer：
+            ① 图二的两行宫格至少需要 ~104dp，而 candidatesContainer 恒为
+               @dimen/candidates_bar_height(48dp) 固定高；若塞进去就必须改这个尺寸，
+               会污染「候选栏双态」的几何地基（回归红线）。
+            ② 平级后本 View 高度自适应，**完全不碰 candidates_bar_height、
+               也不动 inputToolbar / candidatesView 内部任何东西**。
+
+          双态关系（由 QingjianImeService 保证）：
+            · 常态            ：本 View GONE，候选栏候选栏照常显示；
+            · 单击 / 长按激活 ：本 View VISIBLE，**同时**把 candidatesContainer 置 GONE
+                                （即「原工具栏所在的那一条被替换掉」）；
+            · 退出            ：本 View GONE，candidatesContainer 恢复 VISIBLE，
+                                内部 toolbar/candidates 双态由 showToolbar()/showCandidates() 决定。
+          → 视觉上就是「工具栏那一条被换成光标面板」，键盘字母区（panelHost）**始终可见可点**。
+
+          两个子 View 互斥，同时只显示一个：cursorOperationPanelView（图二）/ cursorShiftBarView（图三）。
+        -->
+        <FrameLayout
+            android:id="@+id/cursorModeHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cursor_panel_surface"
+            android:visibility="gone" />
+
+        <!--
+          ★ v1.0 语音输入状态栏（**与 candidatesContainer 平级**）。
+
+          为什么平级而不塞进 candidatesContainer（红线①，与 v0.8 光标面板同理）：
+            ① candidatesContainer 恒为 @dimen/candidates_bar_height(48dp) 固定高；
+               语音状态栏由内容自适应，平级后**完全不碰 candidates_bar_height、
+               也不动 inputToolbar / candidatesView 内部任何东西**。
+            ② 平级才能保证「**原键盘布局保持不变，只把顶部工具栏那一条替换掉**」
+               （需求原文），键盘字母区（panelHost）**始终可见可点，不做覆盖**。
+
+          双态关系（由 QingjianImeService 保证）：
+            · 常态            ：本 View GONE，候选栏照常显示；
+            · 点工具栏麦克风  ：本 View VISIBLE，**同时**把 candidatesContainer 置 GONE
+                                （即「原工具栏所在的那一条被替换掉」）；
+            · 退出            ：本 View GONE，candidatesContainer 恢复 VISIBLE，
+                                内部 toolbar/candidates 双态由 showToolbar()/showCandidates() 决定。
+          ⚠️ 与 cursorModeHost（v0.8）互斥：同时只显示一个，由服务层保证。
+          面板本体（VoiceInputPanelView）由 QingjianImeService 在此宿主内 addView 创建。
+        -->
+        <FrameLayout
+            android:id="@+id/voiceInputHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/voice_panel_surface"
+            android:visibility="gone" />
+
+        <!-- ★ 双态容器：固定高度，内部 toolbar / candidates 二选一显示 -->
+        <FrameLayout
+            android:id="@+id/candidatesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/candidates_bar_height"
+            android:background="@color/candidates_bg">
+
+            <!-- 状态 A：工具栏（无拼音缓冲时显示；初始显示工具栏） -->
+            <include
+                android:id="@+id/inputToolbar"
+                layout="@layout/input_toolbar" />
+
+            <!-- 状态 B：候选栏（拼音缓冲非空时显示；初始 gone） -->
+            <com.qingjian.android.CandidatesView
+                android:id="@+id/candidatesView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!--
+          ★ v1.3 删除键上滑「清空模式」气泡（**与 candidatesContainer 平级、wrap_content、初始 gone**）。
+
+          位置选择说明（为什么贴在候选栏区底部中央，而不是浮在删除键正上方）：
+            ① 删除键位于**键盘字母区底部**（panelHost 内），而 panelHost 由三套键盘面板 include 叠放，
+               若把气泡塞进某个面板，会与「三面板共用」的纪律冲突（需在 3 个面板里各放一份）。
+            ② 贴在本列（contentColumn）**候选栏与键盘之间的边界**、底部中央，视觉上「浮在键盘上方」，
+               无论用户当前处于全拼/符号/9 键哪个面板都一致可见，**只此一处**即可覆盖三个面板。
+            ③ 本 View 为 wrap_content，平级插入**完全不碰 candidates_bar_height**、也不动
+               toolbar/candidates 内部任何东西（候选栏双态几何零改动）。
+          显隐由 QingjianImeService 的 [onClearModeChanged] 控制：进入清空模式 VISIBLE，取消/抬手 GONE。
+        -->
+        <TextView
+            android:id="@+id/backspaceClearBubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/backspace_bubble_margin_bottom"
+            android:background="@drawable/backspace_bubble_bg"
+            android:paddingStart="@dimen/backspace_bubble_padding_h"
+            android:paddingEnd="@dimen/backspace_bubble_padding_h"
+            android:paddingTop="@dimen/backspace_bubble_padding_v"
+            android:paddingBottom="@dimen/backspace_bubble_padding_v"
+            android:text="@string/backspace_clear_hint"
+            android:textColor="@color/backspace_bubble_text"
+            android:textSize="@dimen/backspace_bubble_text_size"
+            android:visibility="gone" />
+
+        <!-- 下方键盘面板：三套叠放，通过 visibility 切换（沿用 v0.1 逻辑） -->
+        <FrameLayout
+            android:id="@+id/panelHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp">
+
+            <include
+                android:id="@+id/panelQwerty"
+                layout="@layout/keyboard_qwerty" />
+
+            <include
+                android:id="@+id/panelT9"
+                layout="@layout/keyboard_t9"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/panelSymbols"
+                layout="@layout/keyboard_symbols"
+                android:visibility="gone" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!--
+      ★ v0.6 输入方式选择面板（整键盘区覆盖层）：
+        作为根 FrameLayout 的第二个子项、MATCH_PARENT，天然叠在 ① 之上。
+        初始 gone；展开时 VISIBLE → 完全遮挡原键盘/候选栏/工具栏。
+        由 QingjianImeService 代码创建并 addView 到此（见 wireInputModePanel()）；
+        这里只声明「宿主」占位，id=inputModePanelHost。
+     -->
+    <com.qingjian.android.InputModePanelView
+        android:id="@+id/inputModePanelHost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!--
+      ★ v0.7 剪贴板历史面板（整键盘区覆盖层，与输入方式面板**同级**）：
+        作为根 FrameLayout 的第三个子项、MATCH_PARENT，初始 gone。
+        与输入方式面板互斥（同时只显示一个，由 QingjianImeService 保证）。
+        由 QingjianImeService 代码定位并接线（见 wireClipboardPanel()）。
+    -->
+    <com.qingjian.android.ClipboardPanelView
+        android:id="@+id/clipboardPanelHost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

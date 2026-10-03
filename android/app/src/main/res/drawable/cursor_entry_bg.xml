@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 工具栏「<I>」光标入口按钮背景（浅色主题，selector 两态）。
+
+  ★ 形状说明（重要）：图标形如 `<I>`（左尖括号 ◀ + 竖线 │ + 右尖括号 ▶）。
+    **不使用 Unicode 字形拼接**（如 "‹I›"），因为不同设备/字体的箭头比例、
+    基线、字宽差异极大，真机上极易变形。改用
+    [?] `res/drawable/ic_cursor_entry.xml` 的 VectorDrawable 精确绘制，
+    本 drawable 只负责「圆形底 + 按下态」。
+
+  取色：底 @color/cursor_entry_bg(#FFFFFF) + 细描边，按下 @color/cursor_entry_pressed(#CFD8DC)。
+  圆形由 corners radius = 边长一半（@dimen/cursor_entry_radius=18dp / size=36dp）实现。
+  ★ 浅色纪律：不得写死深色底。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_entry_pressed" />
+            <corners android:radius="@dimen/cursor_entry_radius" />
+            <stroke
+                android:width="@dimen/cursor_entry_stroke_width"
+                android:color="@color/cursor_key_stroke" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_entry_bg" />
+            <corners android:radius="@dimen/cursor_entry_radius" />
+            <stroke
+                android:width="@dimen/cursor_entry_stroke_width"
+                android:color="@color/cursor_key_stroke" />
+        </shape>
+    </item>
+</selector>

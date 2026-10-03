@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Qingjian" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorAccent">@color/primary</item>
+    </style>
+
+    <!-- 键盘行 -->
+    <style name="KeyRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!-- 普通字母/数字键 -->
+    <style name="KeyButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/key_height</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/key_margin</item>
+        <item name="android:background">@drawable/key_background</item>
+        <item name="android:textColor">@color/key_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <!-- 功能键（shift/删除/回车/面板切换等） -->
+    <style name="KeyButtonFunction" parent="KeyButton">
+        <item name="android:background">@drawable/key_background_function</item>
+        <item name="android:textColor">@color/key_function_text</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- 9键面板键位（标签较长，如 "7 PQRS"） -->
+    <style name="KeyButtonT9" parent="KeyButton">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- ★ v0.4 工具栏图标按钮（双态容器「状态 A」）：
+         等宽、间距均匀、无边框；横向滚动由外层 HorizontalScrollView 负责。 -->
+    <style name="ToolbarIconButton">
+        <item name="android:layout_width">@dimen/toolbar_button_width</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_margin</item>
+        <item name="android:layout_marginEnd">@dimen/toolbar_button_margin</item>
+        <item name="android:background">@drawable/key_background_function</item>
+        <item name="android:textColor">@color/key_function_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <!--
+      ★ v0.8 工具栏「<I>」光标入口按钮：**正方形 + 圆形底**（区别于其它 64dp 扁按钮）。
+      宽度改为固定 @dimen/cursor_entry_size(36dp)，与相邻按钮的 36dp 高度一致，
+      视觉上是工具栏里唯一的「圆钮」，与参考图一第 4 个图标观感一致。
+      ⚠️ 不用 ImageButton：本按钮之外，工具栏其余项都是 Button + text，
+         统一用 Button + android:foreground(矢量图) 会引入 API 23+ 差异；
+         这里仍用 Button，图标由 android:drawableTop 承载（见 input_toolbar.xml）。
+    -->
+    <style name="ToolbarCursorEntryButton">
+        <item name="android:layout_width">@dimen/cursor_entry_size</item>
+        <item name="android:layout_height">@dimen/cursor_entry_size</item>
+        <item name="android:layout_marginStart">@dimen/toolbar_button_margin</item>
+        <item name="android:layout_marginEnd">@dimen/toolbar_button_margin</item>
+        <item name="android:background">@drawable/cursor_entry_bg</item>
+        <item name="android:textColor">@color/cursor_entry_icon</item>
+        <item name="android:textSize">@dimen/cursor_entry_text_size</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+</resources>

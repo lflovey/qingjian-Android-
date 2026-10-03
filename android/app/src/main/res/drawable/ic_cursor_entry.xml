@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 工具栏「<I>」光标入口图标（VectorDrawable，24dp 基准，纯几何路径）。
+
+  形状（对标参考图一第 4 个图标）：
+       ◀  │  ▶      即「左尖括号 + 竖线 + 右尖括号」
+    由三段 stroke 线绘制，**不依赖任何字体**，真机比例恒定：
+      1) 左箭头：两条斜线交于 (7,12)  →  即 M11.5,5.5 L6.5,12 L11.5,18.5
+      2) 竖线  ：M14,5.5 L14,18.5（中轴「I」）
+      3) 右箭头：两条斜线交于 (17,12) →  即 M12.5,5.5 L17.5,12 L12.5,18.5
+    三段均为 stroke（strokeWidth=1.8），strokeLineCap=round，端点圆润，与原图观感一致。
+
+  ⚠️ 图中「竖线」在箭头之间：为避免两条斜线与竖线在同一 x 区间视觉粘连，
+     左箭头尖端取 6.5、右箭头尖端取 17.5，竖线居中 14；中轴略微偏右与参考图一致。
+
+  着色：android:tint 由布局 / 代码指定为 @color/cursor_entry_icon(#37474F)，
+        本文件 fillColor/strokeColor 用 #FFFFFF 占位（被 tint 覆盖），保证复用性。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 1) 左尖括号：◀ -->
+    <path
+        android:pathData="M11.5,5.5 L6.5,12 L11.5,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- 2) 中轴竖线：I -->
+    <path
+        android:pathData="M14,5.5 L14,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+
+    <!-- 3) 右尖括号：▶ -->
+    <path
+        android:pathData="M12.5,5.5 L17.5,12 L12.5,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

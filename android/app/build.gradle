@@ -1,0 +1,165 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.qingjian.android'
+    compileSdk 34
+    // AGP 8.13.2 的最低支持版本是 build-tools 35.0.0（设 34.0.0 会被显式忽略并回退 35.0.0）。
+    // 沙箱初始只装了 34.0.0；35.0.0 已从腾讯 AndroidSDK 镜像（build-tools_r35_linux.zip）补装。
+    buildToolsVersion '35.0.0'
+    ndkVersion '27.2.12479018'
+
+    defaultConfig {
+        applicationId 'com.qingjian.android'
+        minSdk 24
+        targetSdk 34
+        versionCode 23
+        versionName '1.12'
+
+        // 阶段1 仅交付 arm64-v8a 的 libqingjian.so
+        ndk { abiFilters 'arm64-v8a' }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++17'
+                // 静态 C++ STL：shim 产物不额外依赖 libc++_shared.so，减少运行时加载面
+                arguments '-DANDROID_STL=c++_static'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.28.3'
+        }
+    }
+}
+
+// 无第三方依赖：候选 JSON 用 Android 框架内置 org.json，键盘用框架 View，
+// 以此把镜像依赖面压缩到只有 AGP + Kotlin 插件本体。
+dependencies {
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 离线语音模型准备 task（v1.12 合并版新增）
+//
+// 目的：SenseVoice-Small 模型（model.int8.onnx，约 228 MB）体积过大，不随 Git
+//       仓库分发。本 task 在预构建阶段校验 android/app/src/main/assets/models/
+//       下模型是否就绪；缺失时尝试从外部链接下载并解压。
+//
+// 行为契约（重要）：
+//   · 模型已存在且体积合理  → 直接通过，**绝不阻塞** `./gradlew assembleDebug`；
+//   · 模型缺失且下载链接未配置 → 抛出清晰的构建错误，提示放置路径与配置项；
+//   · 环境无网络 / 下载失败 → 同样抛出清晰的构建错误（优雅降级，不静默）。
+// ─────────────────────────────────────────────────────────────────────────────
+
+// TODO(待配置): 替换为模型分发地址
+// 当前无稳定分发地址，占位符留空。配置后应指向一个包含 model.int8.onnx 与
+// tokens.txt 的压缩包（.zip），task 会自动解压并把文件放入 assets/models/。
+// 备选官方直链（未随仓库分发，需人工下载）：
+//   SenseVoice-Small int8:
+//     https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2
+//   Silero VAD:
+//     https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx
+def MODEL_DOWNLOAD_URL = '' // TODO(待配置): 替换为模型分发地址
+
+ext {
+    // 模型资源目录（相对 app 模块）
+    qjModelAssetDir = file('src/main/assets/models')
+    // 主模型文件名
+    qjModelFile = 'model.int8.onnx'
+    // 主模型「合理体积」下限（字节）：int8 量化版约 228 MB，取 200 MB 作下限校验
+    qjModelMinBytes = 200L * 1024L * 1024L
+}
+
+tasks.register('prepareOfflineModels') {
+    group = 'qingjian'
+    description = '校验离线语音模型；缺失时尝试下载（未配置链接则报错）'
+
+    // 仅在模型目录内容变化或首次构建时执行，避免每次构建重复检查
+    def modelDir = project.file('src/main/assets/models')
+    def modelFile = new File(modelDir, project.ext.qjModelFile)
+    inputs.dir(modelDir).optional()
+    outputs.upToDateWhen { modelFile.exists() && modelFile.length() >= project.ext.qjModelMinBytes }
+
+    doLast {
+        def targetDir = project.file('src/main/assets/models')
+        def target = new File(targetDir, project.ext.qjModelFile)
+        def minBytes = project.ext.qjModelMinBytes
+
+        // ① 已就绪：model.int8.onnx 存在且体积合理 → 直接通过，不阻塞构建
+        if (target.exists() && target.length() >= minBytes) {
+            logger.lifecycle("[qingjian] 离线模型已就绪: ${target} (${target.length()} bytes)")
+            return
+        }
+
+        logger.lifecycle("[qingjian] 未检测到离线模型，尝试获取: ${target.absolutePath}")
+
+        // ② 链接未配置 → 抛出清晰构建错误（含便捷复制缺陷）
+        if (MODEL_DOWNLOAD_URL == null || MODEL_DOWNLOAD_URL.trim().isEmpty()) {
+            throw new GradleException(
+                "缺少模型文件：app/src/main/assets/models/${project.ext.qjModelFile}\n" +
+                "请按 android/README.md 指引放入模型，或配置 build.gradle 中的 MODEL_DOWNLOAD_URL")
+        }
+
+        // ③ 尝试下载并解压（环境可能无网络，失败即优雅报错）
+        def tmpZip = new File(gradle.gradleUserHomeDir, 'tmp/qj-model-download.zip')
+        tmpZip.parentFile.mkdirs()
+        try {
+            logger.lifecycle("[qingjian] 正在下载模型: ${MODEL_DOWNLOAD_URL}")
+            new URL(MODEL_DOWNLOAD_URL).withInputStream { input ->
+                tmpZip.withOutputStream { out -> out << input }
+            }
+            logger.lifecycle("[qingjian] 下载完成，解压到: ${targetDir.absolutePath}")
+            if (!targetDir.exists()) { targetDir.mkdirs() }
+            project.copy {
+                from zipTree(tmpZip)
+                into targetDir
+                include '**/*.onnx', '**/tokens.txt'
+                eachFile { f -> f.path = f.name } // 展平目录层级
+                includeEmptyDirs = false
+            }
+        } catch (Exception e) {
+            throw new GradleException(
+                "缺少模型文件：app/src/main/assets/models/${project.ext.qjModelFile}\n" +
+                "请按 android/README.md 指引放入模型，或配置 build.gradle 中的 MODEL_DOWNLOAD_URL\n" +
+                "（下载失败：${e.message}）", e)
+        } finally {
+            if (tmpZip.exists()) { tmpZip.delete() }
+        }
+
+        // ④ 下载后仍不合规 → 报错
+        if (!target.exists() || target.length() < minBytes) {
+            throw new GradleException(
+                "缺少模型文件：app/src/main/assets/models/${project.ext.qjModelFile}\n" +
+                "请按 android/README.md 指引放入模型，或配置 build.gradle 中的 MODEL_DOWNLOAD_URL")
+        }
+        logger.lifecycle("[qingjian] 离线模型准备完成: ${target} (${target.length()} bytes)")
+    }
+}
+
+// 挂钩到预构建阶段：preBuild 依赖本 task，保证模型缺失时尽早失败
+tasks.matching { it.name == 'preBuild' }.configureEach {
+    dependsOn 'prepareOfflineModels'
+}
+

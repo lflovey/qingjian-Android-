@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="key_height">52dp</dimen>
+    <dimen name="key_margin">2dp</dimen>
+
+    <!-- 候选栏固定高度（v0.2：候选栏并入主视图，随键盘一起显示） -->
+    <dimen name="candidates_bar_height">48dp</dimen>
+
+    <!-- ★ v0.4 双态容器「状态 A」工具栏按钮的等宽与间距（间距均匀） -->
+    <dimen name="toolbar_button_width">64dp</dimen>
+    <dimen name="toolbar_button_margin">4dp</dimen>
+
+    <!-- ★ v0.5 输入方式卡片网格面板尺寸 -->
+    <!-- 卡片固定高度（图标+名称+角标的竖向三段式） -->
+    <dimen name="mode_card_height">68dp</dimen>
+    <!-- 卡片圆角半径 -->
+    <dimen name="mode_card_radius">12dp</dimen>
+    <!-- 卡片间距（网格行列间距） -->
+    <dimen name="mode_card_gap">10dp</dimen>
+    <!-- 顶部栏高度（返回箭头 + 标签页 + 设置齿轮） -->
+    <dimen name="mode_panel_topbar_height">44dp</dimen>
+    <!-- 网格区四周边距 -->
+    <dimen name="mode_panel_padding">12dp</dimen>
+
+    <!-- ★ v0.7 剪贴板历史面板尺寸 -->
+    <!-- 顶部栏高度（返回箭头 + 三 Tab + 汉堡菜单） -->
+    <dimen name="clipboard_topbar_height">44dp</dimen>
+    <!-- 二级分类栏高度（5 个分类标签 + 右侧条数） -->
+    <dimen name="clipboard_categorybar_height">40dp</dimen>
+    <!-- 底部工具栏高度（锁定 / 云同步 / 搜索 / 设置） -->
+    <dimen name="clipboard_bottombar_height">44dp</dimen>
+
+    <!--
+      ★ v0.8 光标操作面板 / 光标平移条尺寸。
+      约束（Material Design 3）：单按钮触控目标 ≥ 48×48dp；间距尽量取 8dp 网格倍数。
+      说明：本面板与 candidatesContainer **平级**，由内容自适应高度，
+          因此**不新增、也不修改** candidates_bar_height（候选栏双态逻辑零改动）。
+    -->
+    <!-- 面板上下内边距 -->
+    <dimen name="cursor_panel_padding_v">6dp</dimen>
+    <!-- 面板左右内边距 -->
+    <dimen name="cursor_panel_padding_h">6dp</dimen>
+    <!-- 宫格按钮高度（两行时面板总高 ≈ 6+44+4+44+6 = 104dp） -->
+    <dimen name="cursor_key_height">44dp</dimen>
+    <!-- 宫格按钮间距（水平/垂直） -->
+    <dimen name="cursor_key_gap">4dp</dimen>
+    <!-- 宫格按钮圆角半径（细边框圆角矩形，对标图二） -->
+    <dimen name="cursor_key_radius">8dp</dimen>
+    <!-- 宫格按钮描边宽度 -->
+    <dimen name="cursor_key_stroke_width">1dp</dimen>
+    <!-- 宫格按钮文字大小（「选择」「剪贴板」等中文标签） -->
+    <dimen name="cursor_key_text_size">15sp</dimen>
+    <!-- 宫格方向键箭头字号（< > ^ v，比中文标签略大以醒目） -->
+    <dimen name="cursor_key_arrow_size">20sp</dimen>
+
+    <!-- 平移条「<<< / >>>」按钮尺寸（正方形，满足 48dp 触控目标） -->
+    <dimen name="cursor_shift_button_size">48dp</dimen>
+    <!-- 平移条按钮圆角（圆角方形，接近百度的圆钮观感） -->
+    <dimen name="cursor_shift_button_radius">24dp</dimen>
+    <!-- 平移条按钮图标字号 -->
+    <dimen name="cursor_shift_arrow_size">26sp</dimen>
+    <!-- 平移条中间实心圆指示器直径 -->
+    <dimen name="cursor_indicator_size">24dp</dimen>
+    <!-- 指示器可点热区最小边长（≥48dp，满足 M3 触控目标） -->
+    <dimen name="cursor_indicator_touch">48dp</dimen>
+
+    <!-- 工具栏「<I>」入口按钮：圆形（正方形 + 半径=边长一半） -->
+    <dimen name="cursor_entry_size">36dp</dimen>
+    <dimen name="cursor_entry_radius">18dp</dimen>
+    <dimen name="cursor_entry_stroke_width">1dp</dimen>
+    <dimen name="cursor_entry_text_size">13sp</dimen>
+
+    <!--
+      ★ v1.0 语音输入状态栏尺寸。
+      约束（Material Design 3）：可点热区 ≥ 48×48dp；间距取 8dp 网格倍数。
+      说明：本面板与 candidatesContainer **平级**，由内容自适应高度，
+          因此**不新增、也不修改** candidates_bar_height（候选栏双态逻辑零改动）。
+    -->
+    <!-- 状态栏上下内边距（+ 内容高 ≈ 48dp，与原候选栏高度对齐，替换后不跳变） -->
+    <dimen name="voice_panel_padding_v">8dp</dimen>
+    <!-- 状态栏左右内边距 -->
+    <dimen name="voice_panel_padding_h">12dp</dimen>
+    <!-- 左侧紫色波纹指示器尺寸（宽 × 高） -->
+    <dimen name="voice_wave_width">44dp</dimen>
+    <dimen name="voice_wave_height">24dp</dimen>
+    <!-- 波纹竖线粗细（圆头） -->
+    <dimen name="voice_wave_line_width">3dp</dimen>
+    <!-- 中间状态文字距波纹的左侧间距 -->
+    <dimen name="voice_hint_margin_start">12dp</dimen>
+    <!-- 右侧「...」圆形按钮直径（圆钮视觉；热区由外层 Layout 撑满栏高） -->
+    <dimen name="voice_more_button_size">32dp</dimen>
+    <dimen name="voice_more_stroke_width">1dp</dimen>
+    <!--
+      ★ v1.10 加载态水平进度条尺寸。
+      约束：进度条置于文字下方，不得撑破 48dp 栏位。文字行高约 20sp(≈20dp)，
+      故进度条高 4dp、上间距 2dp，加载态总高 ≈ 8(上下 padding) × 2 + 20 + 2 + 4 = 42dp < 48dp。
+    -->
+    <dimen name="voice_progress_height">4dp</dimen>
+    <dimen name="voice_progress_margin_top">2dp</dimen>
+
+    <!--
+      ★ v1.3 删除键上滑「清空模式」气泡尺寸。
+      气泡为瞬时状态提示（wrap_content，初始 gone）；圆角 8dp 与光标面板按钮同族观感。
+      ★ 不新增、也不修改任何既有尺寸（候选栏双态几何零改动）。
+    -->
+    <dimen name="backspace_bubble_radius">8dp</dimen>
+    <dimen name="backspace_bubble_padding_h">12dp</dimen>
+    <dimen name="backspace_bubble_padding_v">6dp</dimen>
+    <dimen name="backspace_bubble_text_size">13sp</dimen>
+    <dimen name="backspace_bubble_margin_bottom">6dp</dimen>
+</resources>

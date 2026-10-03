@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 拼音 9 键（T9 multi-tap）：tag 语义 t9:n / special:* -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButtonT9" android:text="1 ，。" android:tag="t9:1" />
+        <Button style="@style/KeyButtonT9" android:text="2 ABC" android:tag="t9:2" />
+        <Button style="@style/KeyButtonT9" android:text="3 DEF" android:tag="t9:3" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButtonT9" android:text="4 GHI" android:tag="t9:4" />
+        <Button style="@style/KeyButtonT9" android:text="5 JKL" android:tag="t9:5" />
+        <Button style="@style/KeyButtonT9" android:text="6 MNO" android:tag="t9:6" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButtonT9" android:text="7 PQRS" android:tag="t9:7" />
+        <Button style="@style/KeyButtonT9" android:text="8 TUV" android:tag="t9:8" />
+        <Button style="@style/KeyButtonT9" android:text="9 WXYZ" android:tag="t9:9" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="符"
+            android:tag="special:sympanel" />
+        <Button style="@style/KeyButtonT9" android:text="0 空格" android:tag="t9:0" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="⌫"
+            android:textSize="20sp"
+            android:tag="special:backspace" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="26键"
+            android:tag="special:qwpanel" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="中/EN"
+            android:tag="special:mode" />
+        <Button
+            style="@style/KeyButton"
+            android:layout_weight="1.5"
+            android:text="空 格"
+            android:textSize="15sp"
+            android:tag="special:space" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="↵"
+            android:textSize="20sp"
+            android:tag="special:enter" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.6 卡片右上角「角标」背景（深色主题，如 拼/英/五/写/文/🌐 小字）。
+  state_selected → 当前项「反色」：白底 + 蓝字（见 ModeCardButton 的文字色设置）；
+  默认 → 深灰底 #3A3A3A + 浅字。
+  state_enabled=false → 禁用项角标底色压暗，与卡底 #222222 协调。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/mode_card_badge_current_bg" />
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape android:shape="oval">
+            <solid android:color="@color/mode_card_disabled_bg" />
+            <stroke android:width="1dp" android:color="@color/mode_card_stroke" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/mode_card_badge_bg" />
+        </shape>
+    </item>
+</selector>

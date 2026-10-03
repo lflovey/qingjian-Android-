@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v1.3 删除键上滑「清空模式」气泡背景（深色圆角 + 白字）。
+
+  对标：按住删除键上滑超过阈值时弹出的提示气泡，视觉要「浮」在键盘之上、醒目可读。
+  取色：规格「深色圆角背景 + 白字」——底 @color/backspace_bubble_bg（深灰 #37474F），
+        圆角 @dimen/backspace_bubble_radius(8dp)。
+  说明：本气泡是**瞬时状态提示**（松手即执行清空），非可交互控件，
+        故不带 pressed 态，单 shape 即可。
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/backspace_bubble_bg" />
+    <corners android:radius="@dimen/backspace_bubble_radius" />
+</shape>

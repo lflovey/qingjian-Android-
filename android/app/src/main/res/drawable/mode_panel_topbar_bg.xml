@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.6 面板顶部栏底色（深色：略浅于面板底 #252525 + 底部 1dp 深描边区分）。
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/mode_panel_topbar_bg" />
+        </shape>
+    </item>
+    <item android:gravity="bottom" android:height="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/mode_card_stroke" />
+        </shape>
+    </item>
+</layer-list>

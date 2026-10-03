@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.6 输入方式选择面板（深色卡片网格，百度输入法深色主题）。
+
+  结构（自上而下）：
+    ① 顶部栏 modePanelTopBar（#252525）：
+         [< 返回箭头]   [胶囊标签「键盘 | 布局」，当前高亮"键盘"]   [⚙ 设置齿轮]
+    ② 网格区 modePanelGrid（GridLayout，4 列，#1E1E1E 面板底）：
+         第一排：拼音26键  拼音9键  双拼    手写
+         第二排：五笔26键  五笔9键  英文26键 英文9键
+         第三排：文字扫描  键盘手写 更多语言
+       每格 = 一个 ModeCardButton（圆角深色卡片：图标 + 标签 + 右上角角标）。
+
+  ★ 承载方式：本布局被 inflate 进 InputModePanelView（继承 FrameLayout）。
+    InputModePanelView 由 QingjianImeService 代码 addView 到 keyboard_view.xml 的
+    根 FrameLayout（id=inputModePanelHost），MATCH_PARENT、初始 gone。
+    展开时 VISIBLE → 完全覆盖原键盘/候选栏/工具栏，满足「整键盘区被替换」。
+
+  ★ 卡片由 InputModePanelView.renderCards() 动态创建并 addView 进 modePanelGrid，
+    以保证卡片与 InputMode 枚举**单一数据源**（不在 XML 里硬编码卡片清单）。
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/modePanelRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/mode_panel_surface">
+
+    <!-- ① 顶部栏：返回箭头 + 胶囊「键盘│布局」+ 设置齿轮 -->
+    <LinearLayout
+        android:id="@+id/modePanelTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mode_panel_topbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/mode_panel_topbar_bg">
+
+        <!-- 左上角返回箭头：点击取消、回到原键盘 -->
+        <ImageButton
+            android:id="@+id/btnModePanelBack"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/mode_panel_back"
+            android:src="@android:drawable/ic_menu_revert"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text" />
+
+        <!-- 中间胶囊标签：键盘 / 布局（当前选「键盘」；「布局」为置灰占位标签） -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tabKeyboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/mode_tab_selected_bg"
+                android:text="@string/mode_panel_tab_keyboard"
+                android:textColor="@color/mode_card_current_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tabLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/mode_panel_tab_layout"
+                android:textColor="@color/mode_panel_topbar_text_inactive"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- 右上角设置齿轮：指向已有 SettingsActivity -->
+        <ImageButton
+            android:id="@+id/btnModePanelSettings"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/mode_panel_settings"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text" />
+    </LinearLayout>
+
+    <!-- ② 网格区：4 列 GridLayout；卡片由代码动态填充（见 InputModePanelView.renderCards()） -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:fillViewport="true">
+
+        <GridLayout
+            android:id="@+id/modePanelGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/mode_panel_padding"
+            android:alignmentMode="alignMargins"
+            android:columnCount="4"
+            android:orientation="horizontal"
+            android:useDefaultMargins="false" />
+    </ScrollView>
+
+</LinearLayout>

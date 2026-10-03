@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">青简输入法</string>
+    <string name="subtype_pinyin_zh">拼音（中文）</string>
+    <string name="subtype_en_us">English (US)</string>
+
+    <string name="settings_title">青简输入法</string>
+    <string name="settings_intro">轻快、本地化的拼音输入法。引擎与词库全部在设备本地运行，不上传任何输入内容。</string>
+    <string name="settings_version">版本：%1$s（debug）</string>
+    <string name="settings_engine_ready">引擎数据已就绪：%1$s</string>
+    <string name="settings_engine_pending">引擎数据尚未解压：打开一次键盘后自动完成初始化</string>
+    <string name="settings_enable_ime">打开系统输入法设置</string>
+    <string name="settings_switch_ime">切换当前输入法</string>
+    <string name="settings_note">提示：在任意输入框长按候选词可查看释义。</string>
+
+    <!-- ★ v0.6 输入方式卡片网格面板（深色）文案 -->
+    <string name="mode_panel_back">返回</string>
+    <string name="mode_panel_settings">设置</string>
+    <string name="mode_panel_tab_keyboard">键盘</string>
+    <string name="mode_panel_tab_layout">布局</string>
+    <string name="mode_panel_placeholder_hint">「%1$s」敬请期待</string>
+    <string name="mode_panel_disabled_hint">「%1$s」暂未支持：%2$s</string>
+    <!--
+      ★ v0.6 修订版：置灰卡点击 Toast 文案（标签 + 原因）。
+      形如「手写」：敬请期待 / 「五笔26键」：五笔数据缺失，暂未支持。
+      与 mode_panel_placeholder_hint / mode_panel_disabled_hint 的区别：
+      后者带「暂未支持」四字前缀，重复啰嗦；本条目直接「标签：原因」，更贴近规格原话。
+      置灰卡显示其 unavailableHint（五笔卡=五笔数据缺失，暂未支持；占位卡=敬请期待）。
+    -->
+    <string name="mode_panel_unavailable_toast">「%1$s」：%2$s</string>
+
+    <!-- ★ v0.7 剪贴板历史面板（深色）文案 -->
+    <string name="clipboard_back">返回</string>
+    <string name="clipboard_menu">菜单</string>
+    <string name="clipboard_lock">锁定</string>
+    <string name="clipboard_cloud">云同步</string>
+    <string name="clipboard_search">搜索</string>
+    <string name="clipboard_settings">设置</string>
+
+    <!-- 顶部三 Tab -->
+    <string name="clipboard_tab_clipboard">剪贴板</string>
+    <string name="clipboard_tab_phrases">常用语</string>
+    <string name="clipboard_tab_suggest">推荐</string>
+
+    <!-- 空状态 -->
+    <string name="clipboard_empty">暂无剪贴板历史</string>
+
+    <!-- 条数显示（无限制；显示当前分类下已加载条数） -->
+    <string name="clipboard_count_placeholder">--/无限制</string>
+    <string name="clipboard_count_unlimited">%1$s/无限制</string>
+
+    <!-- 汉堡菜单 -->
+    <string name="clipboard_menu_title">剪贴板选项</string>
+    <string name="clipboard_menu_clear">清空剪贴板历史</string>
+
+    <!-- 清空确认 -->
+    <string name="clipboard_clear_title">清空剪贴板历史</string>
+    <string name="clipboard_clear_message">将删除全部剪贴板历史记录，且不可恢复。确定继续？</string>
+
+    <!-- 删除单条确认 -->
+    <string name="clipboard_delete_title">删除该条记录</string>
+    <string name="clipboard_delete_message">确定删除「%1$s」？</string>
+
+    <!-- 通用按钮 -->
+    <string name="clipboard_action_confirm">清空</string>
+    <string name="clipboard_action_delete">删除</string>
+    <string name="clipboard_action_cancel">取消</string>
+
+    <!--
+      ★ v0.8 光标操作面板 / 光标平移条（浅色）文案。
+      「剪切板」按用户裁定改为「剪贴板」（语义准确，与剪贴板面板命名统一）。
+      方向箭头 < > ^ v 直接用字符，不上 res（非用户可见语义文案，且需随字号微调）。
+    -->
+    <!-- 工具栏入口按钮的无障碍描述（M3 要求：图标按钮必须有 contentDescription） -->
+    <string name="cursor_entry_desc">光标移动</string>
+    <!-- 图二 第一行 -->
+    <string name="cursor_action_select">选择</string>
+    <!-- 图二 第二行 -->
+    <string name="cursor_action_select_all">全选</string>
+    <string name="cursor_action_copy">复制</string>
+    <string name="cursor_action_paste">粘贴</string>
+    <string name="cursor_action_clipboard">剪贴板</string>
+    <string name="cursor_action_delete">删除</string>
+    <!-- 图二/图三 方向键无障碍描述 -->
+    <string name="cursor_desc_left">光标左移</string>
+    <string name="cursor_desc_right">光标右移</string>
+    <string name="cursor_desc_up">光标上移</string>
+    <string name="cursor_desc_down">光标下移</string>
+    <string name="cursor_desc_shift_left">光标连续左移</string>
+    <string name="cursor_desc_shift_right">光标连续右移</string>
+    <!-- 图三 中间指示器：既是状态提示，也是点击退出的热区 -->
+    <string name="cursor_desc_indicator">退出光标移动模式</string>
+    <!-- 提示文案 -->
+    <string name="cursor_no_selection">请先选择文本</string>
+    <string name="cursor_copy_done">已复制</string>
+    <string name="cursor_copy_empty">无可复制内容</string>
+    <string name="cursor_paste_empty">剪贴板为空</string>
+    <string name="cursor_delete_ready">已删除选区</string>
+
+    <!--
+      ★ v1.0 语音输入状态栏（浅色）文案。
+      波纹指示器为自定义 View（非文字），故无对应字符串；
+      「...」按钮为字符，不上 res（非本地化语义文案）。
+      ★ Toast 文案按需求原文逐字落地（权限/不支持/错误/停止/更多设置）。
+    -->
+    <!-- 中间状态文字（★ v1.11：按住说话 —— 旧「倾听中，点击结束」的「点击结束」语义已死） -->
+    <string name="voice_listening_hint">请说话，松开结束</string>
+    <!-- 可点区域（波纹 + 文字）无障碍描述（★ v1.11 QA：改中性文案——倾听态点击=结束、
+         加载/错误态点击=取消，单一定向描述会与 DECODING/ERROR 态的实际动作错配） -->
+    <string name="voice_stop_desc">结束或取消语音输入</string>
+    <!-- 右侧「...」按钮无障碍描述 -->
+    <string name="voice_more_desc">更多语音设置</string>
+    <!-- 输入时 Toast 提示 -->
+    <string name="voice_need_audio_permission">请去系统设置中给青简输入法开启录音权限</string>
+    <string name="voice_more_placeholder">更多语音设置暂未开放</string>
+    <string name="voice_error_audio">录音出错，请重试</string>
+    <!--
+      ★ v1.9 纯离线（sherpa-onnx + SenseVoice-Small）新增文案。
+    -->
+    <string name="voice_error_default">语音识别出错，请重试</string>
+    <!-- ★ v1.12：录音通道中断（AudioRecord.read 连续异常，非用户松手）→ 明确错误收口文案 -->
+    <string name="voice_error_capture">录音通道中断，请重试</string>
+    <!-- 需求 2：完整性校验失败（文件缺失/长度不符，脏文件已删） -->
+    <string name="voice_model_corrupt">模型文件损坏，请重新安装或推送模型</string>
+    <!-- 需求 3：IO 失败（多为存储空间不足） -->
+    <string name="voice_model_io_error">模型准备失败，请清理存储空间后重试</string>
+    <!-- 模型准备中（首启拷贝 228MB 需数秒） -->
+    <string name="voice_model_preparing">正在准备离线模型，请稍候…</string>
+    <!-- ★ v1.11 按住说话：松开时模型仍未就绪（本次未录到音频）→ 提示稍后再试 -->
+    <string name="voice_hold_model_preparing">模型准备中，请稍后再试</string>
+    <!-- 识别无有效语音 -->
+    <string name="voice_offline_empty">未听到声音，请重试</string>
+    <!-- 离线引擎不可用（native 库加载失败等） -->
+    <string name="voice_offline_unavailable">离线语音引擎不可用，请重新安装</string>
+
+    <!--
+      ★ v1.10 四态状态条新增文案（同一面板按真实状态切换）。
+        · ① 加载态：带百分比（进度回调驱动）/ 无百分比（不确定态）
+        · ③ 识别态：VAD 已断句、ASR 推理中
+        · ④ 错误/空结果：复用既有 voice_offline_empty / voice_error_default 等，不在此新增。
+    -->
+    <!-- ① 加载态 · 带百分比（%1$d 为 0..100 整数；%% 输出字面 %） -->
+    <string name="voice_model_loading_percent">正在准备离线模型 %1$d%%</string>
+    <!-- ① 加载态 · 百分比未知时的无参版 -->
+    <string name="voice_model_loading">正在准备离线模型…</string>
+    <!-- ③ 识别态 -->
+    <string name="voice_decoding_hint">识别中…</string>
+
+    <!--
+      ★ v1.3 删除键上滑清空：气泡文案（需求原文「松开清空」）。
+    -->
+    <string name="backspace_clear_hint">松开清空</string>
+</resources>

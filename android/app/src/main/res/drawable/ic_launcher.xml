@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 启动图标：竹简绿底 + 三条简牍纹（矢量，免 PNG） -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M8,4 L40,4 Q44,4 44,8 L44,40 Q44,44 40,44 L8,44 Q4,44 4,40 L4,8 Q4,4 8,4 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,13 L36,13 L36,17 L12,17 Z M12,22.5 L36,22.5 L36,26.5 L12,26.5 Z M12,32 L28,32 L28,36 L12,36 Z" />
+</vector>

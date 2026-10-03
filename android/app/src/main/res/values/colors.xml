@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#2E7D32</color>
+    <color name="primary_dark">#1B5E20</color>
+
+    <color name="keyboard_bg">#ECEFF1</color>
+    <color name="key_normal">#FFFFFF</color>
+    <color name="key_pressed">#CFD8DC</color>
+    <color name="key_function">#D7DBE0</color>
+    <color name="key_function_pressed">#B0BEC5</color>
+    <color name="key_text">#212121</color>
+    <color name="key_function_text">#37474F</color>
+
+    <!-- 候选栏背景（原 CandidatesView 由代码 setBackgroundColor 设置，v0.2 改由 XML 指定） -->
+    <color name="candidates_bg">#FAFAFA</color>
+
+    <!--
+      ★ v0.6 输入方式面板重做为**深色主题**（百度输入法深色）。
+      规格硬性值：
+        面板底 #1E1E1E、卡片 #2C2C2C、当前项蓝 #1A73E8、禁用卡 #222222 / 文字 #666666。
+      其余（描边、次级文字、按下态、角标反色）为自行取的协调值，见 CHANGELOG_V0.6.md §深色配色表。
+      ★ 只改「面板相关」配色（mode_panel_* / mode_card_*），键盘本体与候选栏配色一律不动。
+    -->
+
+    <!-- 面板整体背景 + 网格底色（规格：深色 #1E1E1E） -->
+    <color name="mode_panel_surface">#1E1E1E</color>
+    <!-- 顶部栏（标签页 + 返回/设置）文字与底色：略浅于面板底以区分 -->
+    <color name="mode_panel_topbar_bg">#252525</color>
+    <color name="mode_panel_topbar_text">#E8EAED</color>
+    <!-- 未选中标签页文字（次级文字，协调值） -->
+    <color name="mode_panel_topbar_text_inactive">#9AA0A6</color>
+    <!-- 当前方式高亮：规格蓝底 #1A73E8，图标/文字白，角标反色 -->
+    <color name="mode_card_current_bg">#1A73E8</color>
+    <color name="mode_card_current_stroke">#1A73E8</color>
+    <color name="mode_card_current_text">#FFFFFF</color>
+    <!-- 可用卡片（未选中）：规格卡底 #2C2C2C + 浅字 + 协调描边 -->
+    <color name="mode_card_bg">#2C2C2C</color>
+    <color name="mode_card_stroke">#3A3A3A</color>
+    <color name="mode_card_text">#E8EAED</color>
+    <!-- 禁用卡片：规格 #222222 底 + #666666 文字 -->
+    <color name="mode_card_disabled_bg">#222222</color>
+    <color name="mode_card_disabled_text">#666666</color>
+    <!-- 按下态叠加（深色下用更亮的蓝，协调值） -->
+    <color name="mode_card_pressed">#2A4A7A</color>
+    <!-- 卡片角标（拼/英/五/写/文/🌐）底色与文字（深色协调值） -->
+    <color name="mode_card_badge_bg">#3A3A3A</color>
+    <color name="mode_card_badge_text">#B0B4B8</color>
+    <!-- 当前项角标「反色」：蓝底卡片上角标改用白底 + 蓝字，形成反色效果 -->
+    <color name="mode_card_badge_current_bg">#FFFFFF</color>
+    <color name="mode_card_badge_current_text">#1A73E8</color>
+
+    <!--
+      ★ v0.7 剪贴板历史面板（深色，与 v0.6 输入方式面板同规格）。
+      规格硬性值：面板底 #1E1E1E；选中分类「蓝字 + 下划线」= #1A73E8。
+      其余（顶栏/底栏/分类栏底色、次级文字）为与 v0.6 深色协调的取值。
+      ★ 只新增剪贴板面板配色，键盘本体/候选栏/输入方式面板配色一律不动。
+    -->
+    <!-- 面板整体背景（规格：#1E1E1E） -->
+    <color name="clipboard_panel_surface">#1E1E1E</color>
+    <!-- 顶部栏 / 底部工具栏底色（略浅于面板底，与 v0.6 mode_panel_topbar_bg 一致） -->
+    <color name="clipboard_topbar_bg">#252525</color>
+    <color name="clipboard_bottombar_bg">#252525</color>
+    <!-- 二级分类栏底色（介于顶栏与面板底之间） -->
+    <color name="clipboard_categorybar_bg">#232323</color>
+    <!-- 顶部 Tab 未选中文字 / 次级文字（沿用 v0.6 次级灰） -->
+    <color name="clipboard_topbar_text_inactive">#9AA0A6</color>
+    <!-- ★ 规格：当前二级分类「蓝色文字 + 下划线」 -->
+    <color name="clipboard_tag_selected">#1A73E8</color>
+    <!-- 顶部 Tab 当前项胶囊底色（与 v0.6 mode_tab_selected 协调） -->
+    <color name="clipboard_tab_selected_bg">#1A73E8</color>
+
+    <!--
+      ★ v0.8 光标操作面板 / 光标平移条（**浅色主题**，与当前开发版一致）。
+      硬性纪律：本版为浅色版，**不得写死任何深色底**（如 #1E1E1E）——夜间模式属后续独立迭代。
+      本组取值全部围绕现有浅色键盘取色（keyboard_bg #ECEFF1 / candidates_bg #FAFAFA /
+      key_function #D7DBE0 / key_function_text #37474F）推导，保证同屏观感统一。
+      ★ 只新增光标面板配色，键盘本体/候选栏/输入方式面板/剪贴板面板配色一律不动。
+    -->
+    <!-- 面板整体底色（与候选栏同色，替换工具栏后无明显断层） -->
+    <color name="cursor_panel_surface">#FAFAFA</color>
+    <!-- 方向 / 操作按钮底（与功能键同色）与描边（细边框圆角矩形，对标图二） -->
+    <color name="cursor_key_bg">#FFFFFF</color>
+    <color name="cursor_key_stroke">#C5CDD3</color>
+    <color name="cursor_key_pressed">#D7DBE0</color>
+    <color name="cursor_key_text">#37474F</color>
+    <!-- 平移条「<<< / >>>」按钮底：比方向键更轻，突出纯图标观感 -->
+    <color name="cursor_shift_key_bg">#FFFFFF</color>
+    <color name="cursor_shift_key_pressed">#D7DBE0</color>
+    <color name="cursor_shift_key_text">#37474F</color>
+    <!-- 平移条中间实心圆指示器（按图三：浅灰实心、无描边；同时是点击退出的热区） -->
+    <color name="cursor_indicator_solid">#CCCCCC</color>
+    <color name="cursor_indicator_pressed">#9AA0A6</color>
+    <!-- 工具栏「<I>」入口按钮：浅色圆底 + 深色图标（与其它工具栏按钮同族） -->
+    <color name="cursor_entry_bg">#FFFFFF</color>
+    <color name="cursor_entry_pressed">#CFD8DC</color>
+    <color name="cursor_entry_icon">#37474F</color>
+
+    <!--
+      ★ v1.0 语音输入状态栏（**浅色主题**，与当前开发版键盘一致）。
+      硬性纪律：本版为浅色版，**不得写死任何深色底**（如 #1E1E1E）——夜间模式属后续独立迭代。
+      背景取自现有浅色键盘取色：与 candidates_bg / cursor_panel_surface 同为 #FAFAFA，
+      保证替换工具栏后与键盘区无缝、无断层。
+      ★ 紫色波纹为需求明确要求的颜色（用户原文：「紫色动态波纹指示器」），
+        命名沿用 cursor_* / clipboard_* 的同族风格（voice_*）。
+      ★ 只新增语音状态栏配色，键盘本体/候选栏/输入方式面板/剪贴板面板/光标面板配色一律不动。
+    -->
+    <!-- 状态栏整体底色（与候选栏同色，替换工具栏后无明显断层） -->
+    <color name="voice_panel_surface">#FAFAFA</color>
+    <!-- 紫色波纹竖线（需求指定的紫色；略带亮度的紫 #7C4DFF，浅底上醒目且不刺眼） -->
+    <color name="voice_wave_line">#7C4DFF</color>
+    <!-- 中间状态文字「倾听中，点击结束」（沿用光标面板深灰，保证浅底可读） -->
+    <color name="voice_hint_text">#37474F</color>
+    <!-- 右侧「...」圆形按钮：白底 + 细描边 + 深色图标（与其它工具栏按钮同族） -->
+    <color name="voice_more_bg">#FFFFFF</color>
+    <color name="voice_more_stroke">#C5CDD3</color>
+    <color name="voice_more_pressed">#D7DBE0</color>
+    <color name="voice_more_icon">#37474F</color>
+
+    <!--
+      ★ v1.3 删除键上滑「清空模式」气泡（深色圆角 + 白字）。
+      规格硬性值：深色圆角背景 + 白字。底取工具栏图标同族深灰 #37474F（保证与浅色键盘对比醒目），
+      文字纯白 #FFFFFF。★ 只新增此气泡配色，其余配色一律不动。
+    -->
+    <color name="backspace_bubble_bg">#37474F</color>
+    <color name="backspace_bubble_text">#FFFFFF</color>
+</resources>

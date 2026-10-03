@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.7 剪贴板历史面板（深色主题，与 v0.6 输入方式面板一致）。
+
+  结构（自上而下）：
+    ① 顶部栏 clipboardTopBar（#252525）：
+         [< 返回箭头]   [剪贴板 | 常用语 | 推荐]（当前高亮"剪贴板"）   [☰ 汉堡菜单]
+    ② 二级分类栏 clipboardCategoryBar（#1E1E1E 上更浅一档）：
+         [全部 | 最近 | 文本 | 数字 | 链接]（选中：蓝字 + 下划线）   [右侧条数]
+    ③ 主体列表 clipboardList（ListView，#1E1E1E 面板底）：
+         深色圆角卡片；空状态 overlay clipboardEmpty（「暂无剪贴板历史」）
+    ④ 底部工具栏 clipboardBottomBar（#252525）：
+         [🔒 锁定] [☁ 云同步] [🔍 搜索] [⚙ 设置]（后三者占位；锁定状态真实切换）
+
+  ★ 承载方式：本布局被 inflate 进 ClipboardPanelView（继承 FrameLayout）。
+    ClipboardPanelView 由 QingjianImeService 代码 addView 到 keyboard_view.xml 的
+    根 FrameLayout（id=clipboardPanelHost），MATCH_PARENT、初始 gone。
+    → 非 AlertDialog；展开时完全遮挡原键盘/候选栏/工具栏。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clipboardPanelRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/clipboard_panel_surface">
+
+    <!-- ① 顶部栏：返回箭头 + 三 Tab（剪贴板/常用语/推荐）+ 汉堡菜单 -->
+    <LinearLayout
+        android:id="@+id/clipboardTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_topbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/clipboard_topbar_bg">
+
+        <ImageButton
+            android:id="@+id/btnClipboardBack"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_back"
+            android:src="@android:drawable/ic_menu_revert"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tabClipboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/clipboard_tab_selected_bg"
+                android:text="@string/clipboard_tab_clipboard"
+                android:textColor="@color/mode_card_current_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tabPhrases"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/clipboard_tab_phrases"
+                android:textColor="@color/clipboard_topbar_text_inactive"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tabSuggest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/clipboard_tab_suggest"
+                android:textColor="@color/clipboard_topbar_text_inactive"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnClipboardMenu"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_menu"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text" />
+    </LinearLayout>
+
+    <!-- ② 二级分类栏：5 个分类 + 右侧条数 -->
+    <LinearLayout
+        android:id="@+id/clipboardCategoryBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_categorybar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/clipboard_categorybar_bg">
+
+        <!-- 分类标签由代码按 ClipboardCategory.barOrder 动态填充（单一数据源） -->
+        <LinearLayout
+            android:id="@+id/clipboardCategoryTags"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <TextView
+            android:id="@+id/clipboardCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="12dp"
+            android:textColor="@color/clipboard_topbar_text_inactive"
+            android:textSize="12sp"
+            android:text="@string/clipboard_count_placeholder" />
+    </LinearLayout>
+
+    <!-- ③ 主体：列表 + 空状态 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/clipboardList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:divider="@null"
+            android:dividerHeight="6dp"
+            android:scrollbars="vertical" />
+
+        <TextView
+            android:id="@+id/clipboardEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/clipboard_empty"
+            android:textColor="@color/clipboard_topbar_text_inactive"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- ④ 底部工具栏：锁定 / 云同步 / 搜索 / 设置 -->
+    <LinearLayout
+        android:id="@+id/clipboardBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/clipboard_bottombar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/clipboard_bottombar_bg">
+
+        <ImageButton
+            android:id="@+id/btnClipboardLock"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_lock"
+            android:src="@android:drawable/ic_lock_idle_lock"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text_inactive" />
+
+        <ImageButton
+            android:id="@+id/btnClipboardCloud"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_cloud"
+            android:src="@android:drawable/ic_menu_upload"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text_inactive" />
+
+        <ImageButton
+            android:id="@+id/btnClipboardSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_search"
+            android:src="@android:drawable/ic_menu_search"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text_inactive" />
+
+        <ImageButton
+            android:id="@+id/btnClipboardSettings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/clipboard_settings"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:scaleType="centerInside"
+            android:padding="10dp"
+            android:tint="@color/mode_panel_topbar_text_inactive" />
+    </LinearLayout>
+
+</LinearLayout>

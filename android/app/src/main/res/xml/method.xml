@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 输入法声明：拼音 zh_CN + 英文 en_US 两个 subtype；设置页指向 SettingsActivity -->
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.qingjian.android.SettingsActivity"
+    android:supportsSwitchingToNextInputMethod="true">
+
+    <subtype
+        android:name="@string/subtype_pinyin_zh"
+        android:icon="@drawable/ic_launcher"
+        android:languageTag="zh-CN"
+        android:imeSubtypeLocale="zh_CN"
+        android:imeSubtypeMode="keyboard"
+        android:imeSubtypeExtraValue="KeyboardLayoutSet=qwerty,AsciiCapable"
+        android:isAsciiCapable="true" />
+
+    <subtype
+        android:name="@string/subtype_en_us"
+        android:icon="@drawable/ic_launcher"
+        android:languageTag="en-US"
+        android:imeSubtypeLocale="en_US"
+        android:imeSubtypeMode="keyboard"
+        android:isAsciiCapable="true" />
+
+</input-method>

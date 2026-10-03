@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 光标操作面板「宫格按钮」背景（浅色主题，selector 两态）。
+
+  对标参考图二：**细边框圆角矩形**（非填充圆钮、非纯图标）。
+  取色：底 @color/cursor_key_bg(#FFFFFF) + 描边 @color/cursor_key_stroke(#C5CDD3)；
+        按下态实心 @color/cursor_key_pressed(#D7DBE0)，与键盘功能键按下态一致。
+
+  ★ 浅色纪律：本版为浅色版，不得写死深色底。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_key_pressed" />
+            <corners android:radius="@dimen/cursor_key_radius" />
+            <stroke
+                android:width="@dimen/cursor_key_stroke_width"
+                android:color="@color/cursor_key_stroke" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_key_bg" />
+            <corners android:radius="@dimen/cursor_key_radius" />
+            <stroke
+                android:width="@dimen/cursor_key_stroke_width"
+                android:color="@color/cursor_key_stroke" />
+        </shape>
+    </item>
+</selector>

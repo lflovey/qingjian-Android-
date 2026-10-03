@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v1.0 语音状态栏右侧「...」圆形按钮背景（浅色主题，selector 两态）。
+
+  对标参考图：**圆形**（radius = 边长一半）浅色底 + 细描边。
+  取色：底 @color/voice_more_bg(#FFFFFF) / 描边 @color/voice_more_stroke(#C5CDD3)；
+        按下态实心 @color/voice_more_pressed(#D7DBE0)，与键盘功能键按下态一致。
+
+  ★ 浅色纪律：本版为浅色版，不得写死深色底。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/voice_more_pressed" />
+            <stroke
+                android:width="@dimen/voice_more_stroke_width"
+                android:color="@color/voice_more_stroke" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/voice_more_bg" />
+            <stroke
+                android:width="@dimen/voice_more_stroke_width"
+                android:color="@color/voice_more_stroke" />
+        </shape>
+    </item>
+</selector>

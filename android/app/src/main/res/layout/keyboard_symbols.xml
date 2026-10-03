@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 符号数字面板：tag 语义 digit:n / punct:x / special:* -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButton" android:text="1" android:tag="digit:1" />
+        <Button style="@style/KeyButton" android:text="2" android:tag="digit:2" />
+        <Button style="@style/KeyButton" android:text="3" android:tag="digit:3" />
+        <Button style="@style/KeyButton" android:text="4" android:tag="digit:4" />
+        <Button style="@style/KeyButton" android:text="5" android:tag="digit:5" />
+        <Button style="@style/KeyButton" android:text="6" android:tag="digit:6" />
+        <Button style="@style/KeyButton" android:text="7" android:tag="digit:7" />
+        <Button style="@style/KeyButton" android:text="8" android:tag="digit:8" />
+        <Button style="@style/KeyButton" android:text="9" android:tag="digit:9" />
+        <Button style="@style/KeyButton" android:text="0" android:tag="digit:0" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButton" android:text="，" android:tag="punct:，" />
+        <Button style="@style/KeyButton" android:text="。" android:tag="punct:。" />
+        <Button style="@style/KeyButton" android:text="！" android:tag="punct:！" />
+        <Button style="@style/KeyButton" android:text="？" android:tag="punct:？" />
+        <Button style="@style/KeyButton" android:text="、" android:tag="punct:、" />
+        <Button style="@style/KeyButton" android:text="；" android:tag="punct:；" />
+        <Button style="@style/KeyButton" android:text="：" android:tag="punct:：" />
+        <Button style="@style/KeyButton" android:text="“" android:tag="punct:“" />
+        <Button style="@style/KeyButton" android:text="”" android:tag="punct:”" />
+        <Button style="@style/KeyButton" android:text="’" android:tag="punct:’" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButton" android:text="（" android:tag="punct:（" />
+        <Button style="@style/KeyButton" android:text="）" android:tag="punct:）" />
+        <Button style="@style/KeyButton" android:text="《" android:tag="punct:《" />
+        <Button style="@style/KeyButton" android:text="》" android:tag="punct:》" />
+        <Button style="@style/KeyButton" android:text="@" android:tag="punct:@" />
+        <Button style="@style/KeyButton" android:text="#" android:tag="punct:#" />
+        <Button style="@style/KeyButton" android:text="￥" android:tag="punct:￥" />
+        <Button style="@style/KeyButton" android:text="%" android:tag="punct:%" />
+        <Button style="@style/KeyButton" android:text="&amp;" android:tag="punct:&amp;" />
+        <Button style="@style/KeyButton" android:text="·" android:tag="punct:·" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButton" android:text="*" android:tag="punct:*" />
+        <Button style="@style/KeyButton" android:text="-" android:tag="punct:-" />
+        <Button style="@style/KeyButton" android:text="+" android:tag="punct:+" />
+        <Button style="@style/KeyButton" android:text="=" android:tag="punct:=" />
+        <Button style="@style/KeyButton" android:text="/" android:tag="punct:/" />
+        <Button style="@style/KeyButton" android:text="\" android:tag="punct:\" />
+        <Button style="@style/KeyButton" android:text="~" android:tag="punct:~" />
+        <Button style="@style/KeyButton" android:text="^" android:tag="punct:^" />
+        <Button style="@style/KeyButton" android:text="_" android:tag="punct:_" />
+        <Button style="@style/KeyButton" android:text="|" android:tag="punct:|" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.4"
+            android:text="拼音"
+            android:tag="special:qwpanel" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.4"
+            android:text="分词'"
+            android:tag="special:apostrophe" />
+        <Button
+            style="@style/KeyButton"
+            android:layout_weight="3"
+            android:text="空 格"
+            android:textSize="15sp"
+            android:tag="special:space" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.4"
+            android:text="⌫"
+            android:textSize="20sp"
+            android:tag="special:backspace" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.4"
+            android:text="↵"
+            android:textSize="20sp"
+            android:tag="special:enter" />
+    </LinearLayout>
+
+</LinearLayout>

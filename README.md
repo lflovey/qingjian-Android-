@@ -14,6 +14,25 @@
   <a href="https://qingjian.app/docs/getting-started/install"><img src="https://img.shields.io/badge/Windows-10%2F11-blue" alt="Windows 10/11"></a>
   <a href="https://qingjian.app/docs/getting-started/linux"><img src="https://img.shields.io/badge/Linux-Fcitx5%20manual-lightgrey" alt="Linux Fcitx5，手动启动"></a>
 </p>
+## 并付仓库包含 Android 版（本仓库为 fork 增强）
+
+> **青简 Qingjian Android 输入法**：本仓库在原桌面版基础上新增了 `android/` 安卓工程（Kotlin + Rust JNI + sherpa-onnx 离线语音）。
+> 桌面版（macOS / Windows / Linux）由原作者维护；**安卓版在本仓库独自演进**。
+>
+> - **安卓版构建与文档**：见 [`android/`](android/)（含独立 README、模型获取、`./gradlew assembleDebug` 构建。）
+> - **桌面版**：保持上游原样，由 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian) 维护。
+
+
+
+## 本仓库包含 Android 版（fork 增强）
+
+> **青简 Android 输入法**：本仓库在原桌面版基础上新增了 `android/` 安卓工程（Kotlin + Rust JNI + sherpa-onnx 离线语音，**完全离线零上传**）。
+> **桌面版**（macOS / Windows / Linux）由原作者维护，保持上游原样；**安卓版在本仓库独立演进**。
+>
+> - **安卓版构建与文档**：见 [`android/`](android/)（含独立 README、语音模型获取、`./gradlew assembleDebug` 构建）
+> - 桌面版继续跟随上游 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian)
+
+---
 
 青简是一款输入法。你可以像平常一样打字：输入拼音、选择候选、写完整句；候选旁的一条译词，让语言学习自然发生在日常输入里。译词始终只是辅助信息，不会盖过你要输入的文字。
 

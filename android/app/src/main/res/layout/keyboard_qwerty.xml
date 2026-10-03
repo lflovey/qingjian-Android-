@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 拼音 26 键（QWERTY）：tag 语义 letter:x / punct:x / special:* -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/KeyRow">
+        <Button style="@style/KeyButton" android:text="q" android:tag="letter:q" />
+        <Button style="@style/KeyButton" android:text="w" android:tag="letter:w" />
+        <Button style="@style/KeyButton" android:text="e" android:tag="letter:e" />
+        <Button style="@style/KeyButton" android:text="r" android:tag="letter:r" />
+        <Button style="@style/KeyButton" android:text="t" android:tag="letter:t" />
+        <Button style="@style/KeyButton" android:text="y" android:tag="letter:y" />
+        <Button style="@style/KeyButton" android:text="u" android:tag="letter:u" />
+        <Button style="@style/KeyButton" android:text="i" android:tag="letter:i" />
+        <Button style="@style/KeyButton" android:text="o" android:tag="letter:o" />
+        <Button style="@style/KeyButton" android:text="p" android:tag="letter:p" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/KeyRow"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+        <Button style="@style/KeyButton" android:text="a" android:tag="letter:a" />
+        <Button style="@style/KeyButton" android:text="s" android:tag="letter:s" />
+        <Button style="@style/KeyButton" android:text="d" android:tag="letter:d" />
+        <Button style="@style/KeyButton" android:text="f" android:tag="letter:f" />
+        <Button style="@style/KeyButton" android:text="g" android:tag="letter:g" />
+        <Button style="@style/KeyButton" android:text="h" android:tag="letter:h" />
+        <Button style="@style/KeyButton" android:text="j" android:tag="letter:j" />
+        <Button style="@style/KeyButton" android:text="k" android:tag="letter:k" />
+        <Button style="@style/KeyButton" android:text="l" android:tag="letter:l" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.6"
+            android:text="中/EN"
+            android:tag="special:mode" />
+        <Button style="@style/KeyButton" android:text="z" android:tag="letter:z" />
+        <Button style="@style/KeyButton" android:text="x" android:tag="letter:x" />
+        <Button style="@style/KeyButton" android:text="c" android:tag="letter:c" />
+        <Button style="@style/KeyButton" android:text="v" android:tag="letter:v" />
+        <Button style="@style/KeyButton" android:text="b" android:tag="letter:b" />
+        <Button style="@style/KeyButton" android:text="n" android:tag="letter:n" />
+        <Button style="@style/KeyButton" android:text="m" android:tag="letter:m" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:layout_weight="1.6"
+            android:text="⌫"
+            android:textSize="20sp"
+            android:tag="special:backspace" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/KeyRow">
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="9键"
+            android:tag="special:t9panel" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="符"
+            android:tag="special:sympanel" />
+        <Button style="@style/KeyButton" android:text="，" android:tag="punct:，" />
+        <Button
+            style="@style/KeyButton"
+            android:layout_weight="3.4"
+            android:text="空 格"
+            android:textSize="15sp"
+            android:tag="special:space" />
+        <Button style="@style/KeyButton" android:text="。" android:tag="punct:。" />
+        <Button
+            style="@style/KeyButtonFunction"
+            android:text="↵"
+            android:textSize="20sp"
+            android:tag="special:enter" />
+    </LinearLayout>
+
+</LinearLayout>

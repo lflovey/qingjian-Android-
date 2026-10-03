@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  输入工具栏（双态容器的「状态 A」：无拼音缓冲时显示）。
+
+  一排横向功能图标（可横向滚动、间距均匀），排布参照百度输入法：
+    [切换输入方式] [表情] [光标工具] [剪贴板] [麦克风] [收起键盘]
+
+  ★ v0.5「切换输入方式」可用（首个按钮，tag=special:switchmode，单击直接弹出卡片网格面板）；
+  ★ v0.8「光标工具」可用（第 ③ 个按钮，tag=special:cursor，圆形「<I>」图标；
+    单击 → 光标操作面板；长按 → 光标平移条）；
+  ★ v0.9「收起键盘」可用（最右按钮，tag=special:hidekb，向下箭头「⌄」；
+    点击 → 清空未完成拼音缓冲 → InputMethodService.requestHideSelf(0) 立即收起键盘）；
+  ★ v1.0「麦克风」可用（第 ⑤ 个按钮，tag=special:voice，🎤 图标；
+    点击 → 启动原生 SpeechRecognizer，工具栏那一条替换为语音识别状态栏，键盘区保持可见）；
+    ★ 剩余 2 个仍为占位图标（alpha 灰显、点击仅记日志，tag=toolbar:placeholder），后续版本激活。
+
+  用 HorizontalScrollView 包裹 LinearLayout，保证窄屏下可横向滚动、间距均匀。
+-->
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/inputToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none"
+    android:background="@color/candidates_bg">
+
+    <LinearLayout
+        android:id="@+id/toolbarRow"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <!-- ① 切换输入方式：本次唯一可用项（单击直接弹出输入方式卡片网格面板） -->
+        <Button
+            android:id="@+id/btnSwitchMode"
+            style="@style/ToolbarIconButton"
+            android:tag="special:switchmode"
+            android:text="中/EN" />
+
+        <!-- ② 表情（占位，未激活） -->
+        <Button
+            android:id="@+id/btnEmoji"
+            style="@style/ToolbarIconButton"
+            android:tag="toolbar:placeholder"
+            android:alpha="0.35"
+            android:text="☺" />
+
+        <!-- ③ ★ v0.8 光标工具（**已激活**）：圆形「<I>」按钮。
+             单击 → 光标操作面板（方向键 + 全选/复制/粘贴/剪贴板/删除）；
+             长按 → 光标平移条（<<< 圆点 >>>）。
+             二者由 QingjianImeService 的 OnTouchListener 以 300ms 阈值区分
+             （不用 setOnLongClickListener，避免系统吞掉单击）。
+             tag=special:cursor，由 wireKeys 跳过、改由 wireCursorEntryButton 单独接线。
+             图标 ic_cursor_entry 为矢量「◀│▶」，tint 用 cursor_entry_icon(#37474F)。 -->
+        <Button
+            android:id="@+id/btnCursor"
+            style="@style/ToolbarCursorEntryButton"
+            android:tag="special:cursor"
+            android:contentDescription="@string/cursor_entry_desc"
+            android:drawableTop="@drawable/ic_cursor_entry"
+            android:text="" />
+
+        <!-- ④ 剪贴板（★ v0.7 激活：点击弹出剪贴板历史面板，tag=special:clipboard） -->
+        <Button
+            android:id="@+id/btnClipboard"
+            style="@style/ToolbarIconButton"
+            android:tag="special:clipboard"
+            android:text="📋" />
+
+        <!-- ⑤ ★ v1.0 麦克风（**已激活**）：★ v1.11 起为「按住说话」交互——由
+             wireVoiceButton 的 OnTouchListener 接管（DOWN 开始录音 / UP 冲刷尾段并上屏 /
+             CANCEL 丢弃本次）；wireKeys 已跳过 special:voice、onKey 已移除该分支，
+             不再走通用单击分发。
+             按下后：工具栏那一条替换为语音识别状态栏（voiceInputHost），键盘字母区保持可见。 -->
+        <Button
+            android:id="@+id/btnMic"
+            style="@style/ToolbarIconButton"
+            android:tag="special:voice"
+            android:text="🎤" />
+
+        <!-- ⑥ 收起键盘（★ v0.9 激活：点击 → 清缓冲 + requestHideSelf(0) 立即收起键盘） -->
+        <Button
+            android:id="@+id/btnCloseKeyboard"
+            style="@style/ToolbarIconButton"
+            android:tag="special:hidekb"
+            android:text="⌄" />
+
+    </LinearLayout>
+</HorizontalScrollView>

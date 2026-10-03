@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.6 顶部栏「键盘│布局」胶囊标签的选中态（深色）：
+  整条胶囊圆角底 + 主色蓝 #1A73E8，形成「胶囊标签」外观（当前高亮"键盘"）。
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:left="4dp" android:right="4dp" android:top="7dp" android:bottom="7dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/mode_card_current_bg" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+</layer-list>

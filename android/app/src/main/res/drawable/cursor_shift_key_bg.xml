@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 光标平移条「<<< / >>>」按钮背景（浅色主题，selector 两态）。
+
+  对标参考图三：平移条上的左右键是**纯图标 + 圆角底**（无边框），
+  与宫格按钮的「细边框」刻意区分，形成两种视觉语言。
+  取色：底 @color/cursor_shift_key_bg(#FFFFFF)，按下 @color/cursor_shift_key_pressed(#D7DBE0)。
+
+  ★ 浅色纪律：不得写死深色底。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_shift_key_pressed" />
+            <corners android:radius="@dimen/cursor_shift_button_radius" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/cursor_shift_key_bg" />
+            <corners android:radius="@dimen/cursor_shift_button_radius" />
+        </shape>
+    </item>
+</selector>

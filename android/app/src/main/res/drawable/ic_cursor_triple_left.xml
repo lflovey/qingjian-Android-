@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 光标平移条「<<<」左移图标（VectorDrawable，24dp 基准）。
+
+  形状（对标参考图三）：**三道等距左尖括号叠排**，形如 «‹。
+
+  几何（视口 24×24，留 3dp 边距，三道括号各占 5dp 宽、间隙 1dp）：
+     第 1 道（最左）：尖端 x=3.5，开口 x=9.0  →  M9,5.5 L3.5,12 L9,18.5
+     第 2 道（居中）  ：尖端 x=9.5，开口 x=15.0 →  M15,5.5 L9.5,12 L15,18.5
+     第 3 道（最右）  ：尖端 x=15.5，开口 x=21.0 → M21,5.5 L15.5,12 L21,18.5
+  y 轴统一 5.5 → 12 → 18.5，垂直居中，与参考图的瘦长比例一致。
+
+  着色：由布局 / 代码 android:tint 指定 @color/cursor_shift_key_text(#37474F)，
+        此处 strokeColor 用 #FFFFFF 占位（被 tint 覆盖）。
+  ★ 不依赖字体，真机比例恒定。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 第 1 道（最左） -->
+    <path
+        android:pathData="M9,5.5 L3.5,12 L9,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- 第 2 道（居中） -->
+    <path
+        android:pathData="M15,5.5 L9.5,12 L15,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- 第 3 道（最右） -->
+    <path
+        android:pathData="M21,5.5 L15.5,12 L21,18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

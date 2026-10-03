@@ -1,0 +1,20 @@
+// 青简输入法 Android 工程 —— 仓库配置
+// 沙箱/构建机直连 google()/mavenCentral() 被拦，必须走腾讯 maven-public 镜像（已实测含 AGP/AndroidX/Kotlin）。
+// 镜像放第一位；google()/mavenCentral() 仅作兜底（正常不会命中）。
+pluginManagement {
+    repositories {
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = 'qingjian-android'
+include ':app'

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ★ v0.7 剪贴板面板：当前二级分类标签的「蓝字 + 下划线」背景 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <size android:height="2dp" />
+            <solid android:color="@color/clipboard_tag_selected" />
+        </shape>
+    </item>
+</layer-list>

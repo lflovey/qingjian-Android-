@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ★ v0.8 光标平移条「中间指示器」背景 = **实心浅灰圆**（按参考图三）。
+
+  ⚠️ 与需求文字「空心圆点」的差异已与用户确认：
+     用户最终裁定「按图做实心」（原话：「2. 中间圆点：选实心（按图）」）。
+     故此处为 solid 填充、**无描边**，不是 ring/空心。
+
+  额外语义：该圆同时是「点击退出光标模式」的热区，
+  故按下态加深为 @color/cursor_indicator_pressed(#9AA0A6) 以给出触觉反馈。
+  热区尺寸由外层 View 用 @dimen/cursor_indicator_touch(48dp) 保证（≥ M3 最小触控目标）。
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/cursor_indicator_pressed" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/cursor_indicator_solid" />
+        </shape>
+    </item>
+</selector>
