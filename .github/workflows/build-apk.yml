@@ -21,23 +21,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # GitHub ubuntu-latest runner 已预装 Android SDK（/usr/local/lib/android/sdk）。
-      # 不用 android-actions/setup-android（v3 在较新 sdkmanager 上装 'tools' 报错已实测失败）。
-      # 直接用自带 sdkmanager 补装工程要求：NDK 27.2.12479018 / build-tools 35.0.0 / CMake 3.28.3。
-      - name: Set up Android SDK & components (runner preinstalled)
+      # GitHub ubuntu-latest runner 预装完整 Android SDK（/usr/local/lib/android/sdk）。
+      # 不手动装组件（sdkmanager 上的 cmake;3.28.3 包不存在，会失败）；
+      # 直接复用预装 NDK / build-tools / cmake，只确认 NDK 27 存在并按需补装。
+      - name: Set up Android SDK (runner preinstalled)
         run: |
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export ANDROID_SDK_ROOT="$ANDROID_HOME"
           echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
-          ls -la "$ANDROID_HOME"
-          echo "--- sdkmanager: "
-          find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head
-          SDKMGR=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -1)
-          echo "SDKMGR=$SDKMGR"
-          yes | "$SDKMGR" --licenses >/dev/null 2>&1 || true
-          echo "--- 安装 NDK / build-tools / cmake ..."
-          "$SDKMGR" "ndk;27.2.12479018" "build-tools;35.0.0" "cmake;3.28.3"
+          echo "--- 已预装 NDK:"; ls "$ANDROID_HOME/ndk" 2>/dev/null
+          echo "--- 已预装 build-tools:"; ls "$ANDROID_HOME/build-tools" 2>/dev/null
+          echo "--- 已预装 cmake:"; ls "$ANDROID_HOME/cmake" 2>/dev/null
+          SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ -d "$ANDROID_HOME/ndk/27.2.12479018" ]; then
+            echo "NDK 27.2.12479018 已预装 ✓"
+          else
+            echo "补装 NDK 27.2.12479018 ..."
+            yes | "$SDKMGR" "ndk;27.2.12479018" 2>&1 | tail -3
+          fi
           echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
 
