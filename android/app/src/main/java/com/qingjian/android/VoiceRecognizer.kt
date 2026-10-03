@@ -277,6 +277,11 @@ class VoiceRecognizer(private val context: Context) {
             )
 
             Log.i(TAG, "QJ-SV-MODEL loading SenseVoice: $modelPath (tokens=$tokensPath)")
+            // ★ v1.13 语音自动加句号开关（设置页）：true=ITN 自动补句号等标点；false=原样上屏。
+            val useAutoPeriod = context.getSharedPreferences(
+                SettingsActivity.PREFS_NAME, android.content.Context.MODE_PRIVATE
+            ).getBoolean(SettingsActivity.KEY_VOICE_AUTO_PERIOD, SettingsActivity.DEFAULT_AUTO_PERIOD)
+            Log.i(TAG, "QJ-SV-MODEL useInverseTextNormalization(autoPeriod)=$useAutoPeriod (settings toggle)")
             val rec = OfflineRecognizer(
                 config = OfflineRecognizerConfig(
                     featConfig = FeatureConfig(sampleRate = SAMPLE_RATE, featureDim = FEATURE_DIM),
@@ -284,7 +289,7 @@ class VoiceRecognizer(private val context: Context) {
                         senseVoice = OfflineSenseVoiceModelConfig(
                             model = modelPath,
                             language = "auto",
-                            useInverseTextNormalization = true,
+                            useInverseTextNormalization = useAutoPeriod,
                         ),
                         tokens = tokensPath,
                         numThreads = 2,

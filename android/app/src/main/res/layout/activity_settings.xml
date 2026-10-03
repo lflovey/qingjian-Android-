@@ -35,6 +35,27 @@
         android:layout_marginTop="8dp"
         android:textSize="14sp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="语音自动加句号"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="开启时，语音识别会在句末自动补齐句号等标点（也会做数字/单位格式化）。关闭后原样上屏。"
+        android:textColor="#757575"
+        android:textSize="12sp" />
+    <Switch
+        android:id="@+id/swVoicePeriod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true" />
+
     <Button
         android:id="@+id/btnEnableIme"
         android:layout_width="match_parent"
