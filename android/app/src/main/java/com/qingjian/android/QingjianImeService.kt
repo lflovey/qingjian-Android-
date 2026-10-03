@@ -373,10 +373,10 @@ class QingjianImeService : InputMethodService() {
         // ★ v1.0：语音输入状态栏（contentColumn 内、与候选栏平级、wrap_content、初始 GONE）
         wireVoicePanel()
 
-        // ★ v1.11：工具栏「🎤」改「按住说话」——用 OnTouchListener 接管（DOWN 开始录 / UP 上屏）。
-        //   ⚠️ 必须在 wireKeys 之前装配；且 wireKeys 已按 tag(`special:voice`) 跳过该键，
+        // ★ v1.13：空格键融合语音——点按=空格、长按≥350ms=按住说话（OnTouchListener 接管）。
+        //   ⚠️ 必须在 wireKeys 之前装配；且 wireKeys 已按 tag(`special:space`) 跳过空格键，
         //      否则统一的 setOnClickListener 会覆盖本触摸监听（同 v0.8 special:cursor 的处理）。
-        wireVoiceButton(keyboardRoot.findViewById(R.id.btnMic))
+        wireSpaceVoiceButtons(keyboardRoot)
 
         // ★ v1.3：删除键手势（按住连续删除 + 上滑清空）
         //   气泡定位（contentColumn 内、与候选栏平级、初始 GONE）+ 手势装配。
@@ -1962,6 +1962,10 @@ class QingjianImeService : InputMethodService() {
             //   这里必须跳过，否则会被本方法的 setOnClickListener 覆盖掉触摸逻辑
             //   （同 v0.8 special:cursor 的处理）。
             if (tag == "special:voice") return
+            // ★ v1.13 空格键由 wireSpaceVoiceButtons 单独处理（点按=空格 / 长按=语音，OnTouchListener），
+            //   这里必须跳过，否则会被本方法的 setOnClickListener 覆盖掉触摸逻辑
+            //   （同 v0.8 special:cursor / v1.3 special:backspace 的处理）。
+            if (tag == "special:space") return
             root.setOnClickListener { v ->
                 v.playSoundEffect(SoundEffectConstants.CLICK)
                 onKey(tag)
@@ -2706,39 +2710,81 @@ class QingjianImeService : InputMethodService() {
      *
      * @param button 工具栏「🎤」（id=btnMic，tag=special:voice）
      */
-    private fun wireVoiceButton(button: Button?) {
-        val b = button ?: run {
-            Log.e(TAG, "wireVoiceButton: btnMic not found (tag=special:voice)! voice hold-to-talk disabled")
-            return
+    // =========================================================================
+    // ★ v1.13 空格键融合语音：点按=空格、长按=按住说话
+    // =========================================================================
+    private val SPACE_VOICE_LONG_PRESS_MS = 350L
+
+    private fun wireSpaceVoiceButtons(root: View) {
+        walkSpaceVoice(root)
+        Log.i(TAG, "wireSpaceVoiceButtons: ready (space=press/long=voice)")
+    }
+
+    private fun walkSpaceVoice(v: View) {
+        if (v is ViewGroup) {
+            for (i in 0 until v.childCount) walkSpaceVoice(v.getChildAt(i))
         }
-        b.setOnTouchListener { v, event ->
-            when (event.actionMasked) {
+        if (v is Button && (v.tag as? String) == "special:space") {
+            attachSpaceVoiceTouch(v)
+        }
+    }
+
+    private fun attachSpaceVoiceTouch(key: Button) {
+        class Holder(val handler: Handler = Handler(Looper.getMainLooper())) {
+            var longPressFired = false
+            var voicePressed = false
+            val timer = Runnable { onLongPress() }
+            fun onLongPress() {
+                if (!voicePressed) return
+                longPressFired = true
+                Log.i(TAG, "QJ-SV-REC SPACE long-press fires -> voice")
+                onVoicePressDown()
+            }
+        }
+        val h = Holder()
+        key.setOnTouchListener { v, ev ->
+            when (ev.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     v.isPressed = true
-                    onVoicePressDown()
+                    h.voicePressed = true
+                    h.longPressFired = false
+                    h.handler.postDelayed(h.timer, SPACE_VOICE_LONG_PRESS_MS)
                     true
                 }
-
                 MotionEvent.ACTION_UP -> {
                     v.isPressed = false
-                    v.performClick()
-                    onVoiceRelease()
+                    h.handler.removeCallbacks(h.timer)
+                    h.voicePressed = false
+                    if (h.longPressFired) {
+                        // 长按成立：松手 = 语音收口
+                        v.performClick()
+                        onVoiceRelease()
+                    } else if (voiceHoldActive || isVoicePanelShown()) {
+                        // 语音会话进行中（如收口前）的快速点按：不插入空格，避免干扰语音
+                        v.performClick()
+                        Log.d(TAG, "QJ-SV-REC SPACE tap while voice active -> ignore")
+                    } else {
+                        // 短按：普通空格
+                        v.performClick()
+                        onSpace()
+                    }
                     true
                 }
-
                 MotionEvent.ACTION_CANCEL -> {
-                    // 手指滑出控件被父类拦截 / 窗口失焦等 → 等价「丢弃本次」
                     v.isPressed = false
-                    Log.i(TAG, "QJ-SV-REC 🎤 ACTION_CANCEL -> treat as discard (holdActive=$voiceHoldActive)")
-                    voiceHoldActive = false
-                    cancelVoiceInput("touch cancelled")
+                    h.handler.removeCallbacks(h.timer)
+                    h.voicePressed = false
+                    if (h.longPressFired) {
+                        Log.i(TAG, "QJ-SV-REC SPACE ACTION_CANCEL -> discard voice")
+                        voiceHoldActive = false
+                        cancelVoiceInput("space touch cancelled")
+                    }
                     true
                 }
-
                 else -> false
             }
         }
-        Log.i(TAG, "wireVoiceButton: ready (hold-to-talk, tag=special:voice, id=${b.id})")
+        Log.i(TAG, "wireSpaceVoiceButtons: space key id=${key.id} wired")
     }
 
     /**

@@ -70,17 +70,10 @@
             android:tag="special:clipboard"
             android:text="📋" />
 
-        <!-- ⑤ ★ v1.0 麦克风（**已激活**）：★ v1.11 起为「按住说话」交互——由
-             wireVoiceButton 的 OnTouchListener 接管（DOWN 开始录音 / UP 冲刷尾段并上屏 /
-             CANCEL 丢弃本次）；wireKeys 已跳过 special:voice、onKey 已移除该分支，
-             不再走通用单击分发。
-             按下后：工具栏那一条替换为语音识别状态栏（voiceInputHost），键盘字母区保持可见。 -->
-        <Button
-            android:id="@+id/btnMic"
-            style="@style/ToolbarIconButton"
-            android:tag="special:voice"
-            android:text="🎤" />
-
+        <!-- ⑤ 语音输入（★ v1.13 起从工具栏移入「空格键」）：
+             空格键点按 = 空格，长按 ≥350ms = 开始语音（按住说话），松开即上屏。
+             由 wireSpaceVoiceButtons 的 OnTouchListener 接管（见 QingjianImeService）。
+             工具栏不再单独放 🎤 按钮。 -->
         <!-- ⑥ 收起键盘（★ v0.9 激活：点击 → 清缓冲 + requestHideSelf(0) 立即收起键盘） -->
         <Button
             android:id="@+id/btnCloseKeyboard"
