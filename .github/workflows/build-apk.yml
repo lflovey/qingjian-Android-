@@ -16,21 +16,30 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Android SDK (含 NDK 27.2.12479018 与 build-tools 35.0.0)
-        uses: android-actions/setup-android@v3
-
-      # 工程 build.gradle 要求：NDK 27.2.12479018、buildTools 35.0.0、CMake 3.28.3
-      - name: Install specific NDK & build-tools
+      # GitHub ubuntu-latest runner 已预装 Android SDK（/usr/local/lib/android/sdk）。
+      # 不用 android-actions/setup-android（v3 在较新 sdkmanager 上装 'tools' 报错已实测失败）。
+      # 直接用自带 sdkmanager 补装工程要求：NDK 27.2.12479018 / build-tools 35.0.0 / CMake 3.28.3。
+      - name: Set up Android SDK & components (runner preinstalled)
         run: |
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "ndk;27.2.12479018" "build-tools;35.0.0" "cmake;3.28.3" >/dev/null 2>&1
-          echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> $GITHUB_ENV
-          echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> $GITHUB_ENV
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          ls -la "$ANDROID_HOME"
+          echo "--- sdkmanager: "
+          find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head
+          SDKMGR=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -1)
+          echo "SDKMGR=$SDKMGR"
+          yes | "$SDKMGR" --licenses >/dev/null 2>&1 || true
+          echo "--- 安装 NDK / build-tools / cmake ..."
+          "$SDKMGR" "ndk;27.2.12479018" "build-tools;35.0.0" "cmake;3.28.3"
+          echo "ANDROID_NDK_PATH=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
 
       # 主语音模型 SenseVoice-Small int8 不入库，构建前下载并解压到 assets/models
       # prepareOfflineModels task 检测到 model.int8.onnx 存在且体积合理即通过。
@@ -43,9 +52,9 @@ jobs:
             curl -L --retry 3 \
               -o /tmp/sensevoice.tar.bz2 \
               "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
-            echo "下载完成，解压 model.int8.onnx ..."
+            echo "解压 model.int8.onnx ..."
             tar xjf /tmp/sensevoice.tar.bz2 -C /tmp --wildcards '*/model.int8.onnx'
-            find /tmp -name 'model.int8.onnx' -exec cp {} "$MODEL_DIR/model.int8.onnx" \;
+            find /tmp -maxdepth 3 -name 'model.int8.onnx' -exec cp {} "$MODEL_DIR/model.int8.onnx" \;
             rm -f /tmp/sensevoice.tar.bz2
             ls -la "$MODEL_DIR"
           else
@@ -56,11 +65,8 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build Debug APK
-        run: cd android && ./gradlew assembleDebug --no-daemon
-        env:
-          # prepareOfflineModels 已由上面下载步骤满足；如有网络波动可保留注释。
-          # 若 gradle 仍需拉 AndroidX/AGP，腾讯镜像已配置在 settings.gradle。
-          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK (artifacts)
         uses: actions/upload-artifact@v4
