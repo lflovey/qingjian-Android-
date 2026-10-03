@@ -30,10 +30,27 @@ android {
         }
     }
 
+    // ★ 固定 debug 签名配置：仓库内随附 qj-debug.keystore（android/qj-debug.keystore）。
+    //   目的：GitHub Actions runner 每次都是全新环境，AGP 会在 ~/.android/ 现生成一个
+    //   debug.keystore → 每次构建签名不同 → 手机上装新版必须先卸载旧版。
+    //   固定 keystore 后，所有构建签名一致，可直接覆盖安装。
+    //   （debug 用途；口令公开无妨。发布正式版请另用 release keystore 且不提交口令。）
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('qj-debug.keystore')
+            storePassword 'qjdebug'
+            keyAlias 'qjdebug'
+            keyPassword 'qjdebug'
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled false
             debuggable true
+            // ★ 固定签名：使用仓库内随附的 qj-debug.keystore，避免每次 GitHub Actions
+            //   runner 临时生成 debug.keystore 导致签名变化、无法覆盖安装。
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled false
